@@ -1,5 +1,6 @@
+Options +FollowSymLinks -Indexes
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
+
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)\.php$ /$1 [L,R=301] 
-DirectoryIndex index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]

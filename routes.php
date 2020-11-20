@@ -5,8 +5,8 @@
 // values are of the form `Controller@action`, which allows for a controller to
 // handle multiple actions.
 return [
-    '/articles/([0-9]+)' => 'Controller\Articles@get',
     '/users' => 'Controller\Users@list',
     '/register' => 'Controller\Users@register',
-    '/login' => 'Controller\Users@login'
+    '/login' => 'Controller\Users@login',
+    '/' => 'Controller\Home@get'
 ];

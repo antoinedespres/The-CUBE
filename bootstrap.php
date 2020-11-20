@@ -17,6 +17,7 @@ $config = require('config.php');
 
 // Connect to the database.
 $db = new \PDO("sqlite:{$config['database']['path']}");
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Try to match the routes to the request URI. If a match is found, a boolean
 // flag is set so it's easy to determine if there was a match. As PHP variables

@@ -1,12 +1,27 @@
-CREATE TABLE if not exists User (UserID integer PRIMARY KEY autoincrement, 
-FirstName text not null, 
-LastName text not null, 
-Email text unique not null, 
-Password text not null, 
-RecoveryEmail text, 
-PhoneNumber text unique, 
-BirthDate numeric not null, 
-LastLoginTime numeric, 
-AccountCreationTime text DEFAULT CURRENT_TIMESTAMP, 
-DarkMode numeric default 0);
+CREATE TABLE if not exists User (
+    UserID integer PRIMARY KEY autoincrement, 
+    FirstName text not null, 
+    LastName text not null, 
+    Email text unique not null, 
+    Password text not null, 
+    RecoveryEmail text, 
+    PhoneNumber text unique, 
+    BirthDate text not null, 
+    LastLoginTime text, 
+    AccountCreationTime text DEFAULT CURRENT_TIMESTAMP, 
+    DarkMode numeric default 0
+);
 
+CREATE TABLE if not exists PasswordResetTemp (
+    Email text not null primary key references User(Email), 
+    Key text not null, 
+    ExpiryDate text
+);
+
+CREATE TABLE if not exists File (
+    FileID integer PRIMARY KEY AUTOINCREMENT,
+    FileName text not null,
+    UploadDateTime numeric DEFAULT CURRENT_TIMESTAMP,
+    SuppressionDateTime numeric,
+    Category text
+);

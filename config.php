@@ -3,5 +3,5 @@
 return [
 	'database' => [
 		'path' => 'database.sqlite',
-	],
+	]
 ];
