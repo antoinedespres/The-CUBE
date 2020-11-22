@@ -37,5 +37,6 @@ CREATE TABLE if not exists HasAccessTo(
     FOREIGN KEY (FileID)
         references File (FileID),
     FOREIGN KEY (UserID)
-        references User (UserID)
+        references User (UserID),
+    PRIMARY KEY (FileID, UserID)
 )
