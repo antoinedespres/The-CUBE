@@ -16,5 +16,9 @@
                      <a href="register">Register
                      </a>
               </li> 
+              <li >
+                     <a href="upload">Upload
+                     </a>
+              </li> 
        </ul>
 </nav>
