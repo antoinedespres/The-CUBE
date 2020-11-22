@@ -30,7 +30,9 @@ class Users
 		$stmt->execute();
 		$user = $stmt->fetch();
 		if (password_verify($data['password'], $user['Password'])) {
-			render('user/home', []);
+			$_SESSION['UserID'] = $user['UserID'];
+			$_SESSION['FirstName'] = $user['FirstName'];
+			render('home/home', []);
 		} else {
 			echo "wrong password";
 		}
