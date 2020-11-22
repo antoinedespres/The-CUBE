@@ -8,5 +8,6 @@ return [
     '/users' => 'Controller\Users@list',
     '/register' => 'Controller\Users@register',
     '/login' => 'Controller\Users@login',
+    '/upload' => 'Controller\File@upload',
     '/' => 'Controller\Home@get'
 ];
