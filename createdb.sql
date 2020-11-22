@@ -23,5 +23,19 @@ CREATE TABLE if not exists File (
     FileName text not null,
     UploadDateTime numeric DEFAULT CURRENT_TIMESTAMP,
     SuppressionDateTime numeric,
-    Category text
+    Category text,
+    UserID integer,
+    FOREIGN KEY (UserID)
+        references User (UserID)
 );
+
+CREATE TABLE if not exists HasAccessTo(
+    Path text not null,
+    FileID integer,
+    UserID integer,
+
+    FOREIGN KEY (FileID)
+        references File (FileID),
+    FOREIGN KEY (UserID)
+        references User (UserID)
+)
