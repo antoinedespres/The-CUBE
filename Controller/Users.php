@@ -26,6 +26,6 @@ class Users
 
 	public function list()
 	{
-		\Model\Usrs::list();
+		\Model\Users::list();
 	}
 }
