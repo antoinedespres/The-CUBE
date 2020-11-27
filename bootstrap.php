@@ -40,7 +40,7 @@ if (!$matched) {
 
 // Define the render function used by the controller to define the view to
 // display.
-function render($view, $data) {
+function render($view, $data = []) {
     require("view/$view.php");
 }
 

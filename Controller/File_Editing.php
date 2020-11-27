@@ -2,23 +2,34 @@
 
 namespace Controller;
 
-class File_Editing{
+class File_Editing
+{
 
-    public function findFile(){
-       $fileToEdit = \Model\File_Editing::findFile($_GET);
-       render('user/file_editing',);
-       $myfile = fopen($fileToEdit, "a+") or die("You're not able to open this file");
-       $content = fread($myfile,filesize($fileToEdit));
-       fclose($fileToEdit);
-       return $content;
+    public static function fileContent()
+    {
+        /*$_GET[file_id]*/
+        $fileToEdit = \Model\File_Editing::findFile();
+        $myfile = fopen($fileToEdit, "a+") or die("This file doesn't exist");
+        $content = fread($myfile, filesize($fileToEdit));
+        fclose($fileToEdit);
+        render('file/File_Edit/File_Editing',  $content);
     }
 
-    public function editFile(){
-        if($_SERVER['REQUEST_METHOD'] == 'GET'){
-            render('file/File_Editing', []);
+    public function editFile()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            render('file/File_Edit/File_Editing', []);
+            return;
         }
+        $fileToEdit = \Model\File_Editing::findFile();
+        $myTextFileHandler = @fopen($fileToEdit,"r+");
+        @ftruncate($myTextFileHandler, 0);
+        file_put_contents($fileToEdit, $_POST['editedContent']);
 
+    }
 
+    public static function showFiles(){
+        render('file/File_Edit/Select_File_To_Edit', \Model\File_Editing::findFiles());
     }
 
 }

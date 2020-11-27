@@ -20,5 +20,13 @@
                      <a href="upload">Upload
                      </a>
               </li> 
+              <li >
+                     <a href="drive">Drive
+                     </a>
+              </li> 
+              <li >
+                     <a href="edit">Edit
+                     </a>
+              </li> 
        </ul>
 </nav>

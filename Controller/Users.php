@@ -11,7 +11,7 @@ class Users
 			return;
 		}
 
-		\Model\Users::register($_POST);
+		\Model\Users::register();
 	}
 
 	public function login()
@@ -21,11 +21,30 @@ class Users
 			return;
 		}
 
-		\Model\Users::login($_POST);
+		\Model\Users::login();
 	}
 
 	public function list()
 	{
-		\Model\Users::list();
+		$users = \Model\Users::list();
+		render('user/list', $users);
+	}
+
+	public function forgottenPassword()
+	{
+		if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+			render('user/forgottenPassword_form', []);
+			return;
+		}
+		\Model\Users::forgottenPassword($_POST);
+	}
+
+	public function resetPassword()
+	{
+		if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+			render('user/resetPassword_form', []);
+			return;
+		}
+		\Model\Users::resetPassword($_POST);
 	}
 }

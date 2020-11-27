@@ -13,5 +13,5 @@ echo '
 	<input type="submit" value="Submit">
 </form>';
 
-if (isset($response))
-	echo $message;
+if (isset($data['message']))
+	echo $data['message'];

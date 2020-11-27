@@ -5,7 +5,7 @@ CREATE TABLE if not exists User (
     Email text unique not null, 
     Password text not null, 
     RecoveryEmail text, 
-    PhoneNumber text unique, 
+    PhoneNumber text, 
     BirthDate text not null, 
     LastLoginTime text, 
     AccountCreationTime text DEFAULT CURRENT_TIMESTAMP, 
