@@ -33,11 +33,24 @@ class Users
 		if ($_POST['email']);
 	}
 
+	/**
+	 * return the UserId correponding to the email, null if not found
+	 */
+	public static function getUser($email){
+		global $db;
+
+		$stmt = $db->prepare("SELECT UserID FROM User where Email = ?;");
+		$stmt->bindParam(1, $email, \PDO::PARAM_STR);
+		$stmt->execute();
+
+		return $stmt->fetch();
+	}
+
 	public static function login()
 	{
 		global $db;
 
-		$stmt = $db->prepare("SELECT * FROM User where Email = ?");
+		$stmt = $db->prepare("SELECT * FROM User where Email = ?;");
 		$stmt->bindParam(1, $_POST['email'], \PDO::PARAM_STR);
 		$stmt->execute();
 		$user = $stmt->fetch();
@@ -58,7 +71,7 @@ class Users
 	{
 		global $db;
 
-		$stmt = $db->prepare("SELECT * FROM User");
+		$stmt = $db->prepare("SELECT * FROM User;");
 		if ($stmt->execute() === false) { //this is early return
 			echo $stmt->errorCode();
 			return;

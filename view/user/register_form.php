@@ -6,7 +6,7 @@
 <?php include("view/menu.php"); ?>
 
 <div id="register">
-	<form method="POST">
+	<form method="POST" action="/register">
 		<fieldset>
 			<legend>Registration</legend>
 			<table>

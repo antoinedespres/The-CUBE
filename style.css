@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz:wght@300&display=swap');
 /* ---------
 	REGISTER
 ------------ */
-
 #register legend, label, span {
 	font-family: sans-serif;
 	font-size:13px;
@@ -23,6 +23,7 @@
 	text-align:right;
 	padding-top:10px;
 }
+
 #register label .inline {
 	display:inline;
 }
@@ -87,4 +88,45 @@
 	/* border: none; */
 	margin-top: 8px;
 	font-size: 15px;
+}
+
+/* ---------
+   HOME
+------------- */
+#home {
+	background-color : #2b2142;
+	margin : 0 auto;
+}
+#home h1{
+	color: white;
+	text-align: center;
+	font-family: 'Yanone Kaffeesatz', sans-serif;
+	font-size : 100px;
+}
+#home p{
+	color: white;
+	text-align: center;
+	font-family: 'Yanone Kaffeesatz', sans-serif;
+	font-size:25px;
+}
+
+#home .button a{
+	text-decoration :none;
+	color : white;
+	text-align: center;
+}
+#home .button{
+	font-family: 'Yanone Kaffeesatz', sans-serif;
+	margin: 50px;
+	padding:10px;
+	font-size:25px;
+	border:solid 1px white;
+	border-radius:4px;
+	background-color: rgb(139, 119, 155);
+}
+#home .containerChild{
+	text-align:center;
+}
+#home #container{
+	padding-top: 100px;
 }

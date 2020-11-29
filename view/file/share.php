@@ -1,6 +1,8 @@
-<?php include("view/menu.php"); ?>
+<?php 
 
+include("view/menu.php"); 
 
+echo '
 <form method="POST">
     <fieldset>
         <legend>Share a file to an user</legend>
@@ -11,4 +13,7 @@
         <input type="email" name="email" required>
     </fieldset>
     <input type="submit" value="Share">
-</form>
+</form>';
+
+if ($data != null)
+	echo $data;

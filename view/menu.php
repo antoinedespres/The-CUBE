@@ -1,44 +1,31 @@
-<nav>
-       <ul >
-              <li>
-                     <a href="/">Home
-                     </a>
-              </li> 
-              <li >
-                     <a href="users">Users list
-                     </a>
-              </li> 
-              <li >
-                     <a href="login">Login
-                     </a>
-              </li> 
-              <li >
-                     <a href="register">Register
-                     </a>
-              </li> 
-              <li >
-                     <a href="upload">Upload
-                     </a>
-              </li> 
-              <li >
-                     <a href="share">Share your files
-                     </a>
-              </li> 
-              <li >
-                     <a href="drive">Your files
-                     </a>
-              </li>
-              <li >
-                     <a href="edit">Edit
-                     </a>
-              </li> 
-              <li >
-                     <a href="disconnect">Disconnect
-                     </a>
-              </li> 
-       </ul>
-</nav>
-
 <?php
-       include('file/searchBar.php');
+       echo '
+       <head>
+	       <link href="style.css" rel="stylesheet" type="text/css">
+       </head> 
+
+       <nav>
+              <ul class="menu">
+                     <li>
+                            <a href="/">Home</a>
+                     </li> 
+                     <li>
+                            <a href="users">Users list</a>
+                     </li> 
+              </ul>
+       </nav>';
+
+
+       if (isset($_SESSION['UserID'])){
+              echo '
+              <div class="containerChild">
+                     <span class="button"><a href="upload">Upload a file</a></span>
+                     <span class="button"><a href="share">Share your files</a></span>
+                     <span class="button"><a href="yourFiles">Your files</a></span>
+                     <span class="button"><a href="sharedFiles">Your shared files</a></span>
+                     <span class="button"><a href="edit">Edit</a></span>
+                     <span class="button"><a href="disconnect">Disconnect</a></span>
+              </div>';
+              include('file/searchBar.php');
+       }
 ?>

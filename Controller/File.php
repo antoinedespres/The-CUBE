@@ -21,6 +21,12 @@ class File
         render('file/drive', $files);
     }
 
+    public static function sharedList()
+    {
+        $files = \Model\File::sharedList();
+        render('file/drive', $files);
+    }
+
     public static function share()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -28,7 +34,8 @@ class File
             return;
         }
 
-
+        $response = \Model\File::share();
+        render('file/share', $response);
     }
 
     //---------------------------------------------------------
@@ -38,12 +45,10 @@ class File
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             render('file/searchBar', []);
             return;
-            //\Controller\File::list2();
         }
         else{
-            \Controller\File::list2(htmlspecialchars($_POST["search"]));
+            \Controller\File::list2();
         }
-        render('file/searchBar', []);
     }
 
     public static function list2($nom = null)
@@ -53,8 +58,8 @@ class File
             $path = $_GET['dir'];
         }
 
-        $files = \Model\File::list2($path, $nom);
-        render('file/drive', $files);
+        $response = \Model\File::list2();
+        render('file/drive', $response); 
     }
     // FIN FONCTION POUR SEARCH BAR
 }

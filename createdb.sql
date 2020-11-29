@@ -30,7 +30,6 @@ CREATE TABLE if not exists File (
 );
 
 CREATE TABLE if not exists HasAccessTo(
-    Path text not null,
     FileID integer,
     UserID integer,
 
@@ -39,4 +38,5 @@ CREATE TABLE if not exists HasAccessTo(
     FOREIGN KEY (UserID)
         references User (UserID),
     PRIMARY KEY (FileID, UserID)
-)
+);
+

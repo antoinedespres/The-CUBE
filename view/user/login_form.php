@@ -5,7 +5,7 @@
 <?php include("view/menu.php"); ?>
 
 <div id="login">
-	<form method="POST">
+	<form method="POST" action="/login">
 		<fieldset>
 			<legend>Login</legend>
 			<label for="email">Email : </label>
