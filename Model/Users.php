@@ -151,8 +151,8 @@ your account and change your security password as someone may have guessed it.</
 				$mail->IsSMTP();
 				$mail->Host = "smtp.gmail.com"; // Enter your host here
 				$mail->SMTPAuth = true;
-				$mail->Username = "bananuage@gmail.com"; // Enter your email here
-				$mail->Password = "AntoTotoMomoViviNiNi"; //Enter your password here
+				$mail->Username = "your email"; // Enter your email here
+				$mail->Password = "yourPassword"; //Enter your password here
 				$mail->Port = 587;
 
 				$mail->IsHTML(true);
