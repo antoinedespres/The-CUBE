@@ -1,2 +1,2 @@
-# Bananuage (working title)
-Cloud service
+# Bananuage
+*WIP, check back later* ;)
