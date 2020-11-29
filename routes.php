@@ -11,9 +11,12 @@ return [
     '/login' => 'Controller\Users@login',
     '/forgottenpassword' => 'Controller\Users@forgottenPassword',
     '/resetPassword' =>'Controller\Users@resetPassword',
+    '/disconnect' => 'Controller\Users@disconnect',
     '/upload' => 'Controller\File@upload',
+    '/share' => 'Controller\File@Share',
     '/drive' => 'Controller\File@list',
-    '/create_dir' => 'Controller\File@createDirectory',
+    '/search' => 'Controller\File@searchFiles',
+    '/createDir' => 'Controller\File@createDirectory',
     '/edit' => 'Controller\File_Editing@showFiles',
     '/File_Editing' => 'Controller\File_Editing@fileContent',
     '/' => 'Controller\Home@get'

@@ -78,3 +78,13 @@
 #login form input[type=submit]:hover {
 	background-color:#f7eac0;
 }
+
+/* ---------
+   SEARCHBAR
+------------- */
+#searchBar form input[type=search], #searchBar form button[type=submit] {
+	padding: 6px;
+	/* border: none; */
+	margin-top: 8px;
+	font-size: 15px;
+}

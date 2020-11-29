@@ -1,12 +1,8 @@
-<?php include("view/menu.php");
-
-echo '$_SESSION contains: ';
-print_r($_SESSION);
-
-if (isset($_SESSION['UserID']) AND isset($_SESSION['FirstName']))
-{
-    echo ' The connected user is ' . $_SESSION['FirstName'] . " and his UserID is " . $_SESSION['UserID'];
-}
-?>
-
+<?php include("view/menu.php");?>
 <h1>Welcome to Bananuage!</h1>
+<?php 
+
+if (isset($_SESSION['FirstName']))
+{
+    echo 'Welcome ' . $_SESSION['FirstName'] . " .";
+}

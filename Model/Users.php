@@ -30,23 +30,27 @@ class Users
 	public static function isRegisterValid()
 	{
 		$valid = true;
-		if($_POST['email'] );
+		if ($_POST['email']);
 	}
 
 	public static function login()
 	{
 		global $db;
 
-		$stmt = $db->prepare("select * from user where Email = ?");
+		$stmt = $db->prepare("SELECT * FROM User where Email = ?");
 		$stmt->bindParam(1, $_POST['email'], \PDO::PARAM_STR);
 		$stmt->execute();
 		$user = $stmt->fetch();
-		if (password_verify($_POST['password'], $user['Password'])) {
-			$_SESSION['UserID'] = $user['UserID'];
-			$_SESSION['FirstName'] = $user['FirstName'];
-			render('home/home', []);
+		if (isset($_POST['email'])) {
+			if (password_verify($_POST['password'], $user['Password'])) {
+				$_SESSION['UserID'] = $user['UserID'];
+				$_SESSION['FirstName'] = $user['FirstName'];
+				render('drive', []);
+			} else {
+				return "ERR_WRONGPASSWORD";
+			}
 		} else {
-			echo "wrong password";
+			return "ERR_NOACCOUNT";
 		}
 	}
 
@@ -54,7 +58,7 @@ class Users
 	{
 		global $db;
 
-		$stmt = $db->prepare("select * from user");
+		$stmt = $db->prepare("SELECT * FROM User");
 		if ($stmt->execute() === false) { //this is early return
 			echo $stmt->errorCode();
 			return;
@@ -85,7 +89,7 @@ class Users
 				print_r($user);
 			}
 
-			if($count == 0){
+			if ($count == 0) {
 				return "ERR_NORESULT";
 			}
 
@@ -164,5 +168,10 @@ your account and change your security password as someone may have guessed it.</
 	public static function resetPassword($data)
 	{
 		// WORK IN PROGRESS...
+	}
+
+	public static function disconnect()
+	{
+		$_SESSION = null;
 	}
 }

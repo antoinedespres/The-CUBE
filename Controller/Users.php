@@ -47,4 +47,13 @@ class Users
 		}
 		\Model\Users::resetPassword($_POST);
 	}
+
+	public function disconnect()
+	{
+		if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+			render('user/resetPassword_form', []);
+			return;
+		}
+		\Model\Users::disconnect($_POST);
+	}
 }

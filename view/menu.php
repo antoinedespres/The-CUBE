@@ -1,11 +1,11 @@
 <nav>
        <ul >
               <li>
-                     <a href="/">Accueil
+                     <a href="/">Home
                      </a>
               </li> 
               <li >
-                     <a href="users">List
+                     <a href="users">Users list
                      </a>
               </li> 
               <li >
@@ -21,12 +21,24 @@
                      </a>
               </li> 
               <li >
-                     <a href="drive">Drive
+                     <a href="share">Share your files
                      </a>
               </li> 
+              <li >
+                     <a href="drive">Your files
+                     </a>
+              </li>
               <li >
                      <a href="edit">Edit
                      </a>
               </li> 
+              <li >
+                     <a href="disconnect">Disconnect
+                     </a>
+              </li> 
        </ul>
 </nav>
+
+<?php
+       include('file/searchBar.php');
+?>
