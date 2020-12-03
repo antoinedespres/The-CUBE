@@ -1,5 +1,5 @@
 window.addEventListener('load', () => {
-    Array.from(document.getElementsByClassName('requiredField')).forEach((e) => { // warning: Array.from() is not compatible with IE
+    Array.from(document.getElementsByClassName('requiredField')).forEach((e) => {
         e.innerHTML = '* ' + e.innerHTML;
     });
 });
