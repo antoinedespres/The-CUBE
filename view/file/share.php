@@ -15,5 +15,8 @@ echo '
     <input type="submit" value="Share">
 </form>';
 
-if ($data != null)
-	echo $data;
+if ($data != null) echo $data;
+
+?>
+
+<script src="script/chat.js.php?FirstName=<?= $_SESSION['FirstName'];?>"></script>
