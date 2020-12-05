@@ -58,7 +58,7 @@ class Users
 			if (password_verify($_POST['password'], $user['Password'])) {
 				$_SESSION['UserID'] = $user['UserID'];
 				$_SESSION['FirstName'] = $user['FirstName'];
-				render('drive', []);
+				render('home/home', []);
 			} else {
 				return "ERR_WRONGPASSWORD";
 			}
