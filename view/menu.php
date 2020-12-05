@@ -20,6 +20,7 @@
               echo '
               <div class="containerChild">
                      <span class="button"><a href="upload">Upload a file</a></span>
+		     <span class="button"><a href="delete">Delete a file</a></span>
                      <span class="button"><a href="share">Share your files</a></span>
                      <span class="button"><a href="yourFiles">Your files</a></span>
                      <span class="button"><a href="sharedFiles">Your shared files</a></span>
