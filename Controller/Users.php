@@ -12,6 +12,9 @@ class Users
 		}
 
 		\Model\Users::register();
+		// redirige vers la page d'accueil pour le moment si l'inscription est réussie
+		// faudra probablement changer ça
+		render("home/home");
 	}
 
 	public function login()
