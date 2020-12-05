@@ -1,12 +1,12 @@
 <?php
-// gérer les catégories
+
 namespace Model;
 
 class File
 {
-
     /**
      * Uploads a file of the currently logged in user to the server
+     * The max size depends on your php.ini configuration
      * @author Viviane Qian
      * @return string containing a success message if it went well, an error message if not
      */
@@ -26,12 +26,14 @@ class File
             return $_FILES['file']['name'] . ' already exists.';
 
         move_uploaded_file($_FILES['file']['tmp_name'], $userDir . '/' . $_FILES['file']['name']);
+        
+        $categ = \Model\File::getCategory($_FILES['file']['name']);
 
         global $db;
 
         $stmt = $db->prepare('insert into File (FileName, Category, UserID) values (?, ?, ?);');
         $stmt->bindParam(1, $_FILES['file']['name'], \PDO::PARAM_STR);
-        $stmt->bindParam(2, 'unknown', \PDO::PARAM_STR);
+        $stmt->bindParam(2, $categ, \PDO::PARAM_STR);
         $stmt->bindParam(3, $id, \PDO::PARAM_STR);
         if ($stmt->execute() === false) {
             return 'Error: ' . $stmt->errorCode();
@@ -48,19 +50,20 @@ class File
     public static function delete()
     {
         $fileName = $_POST['fileName'];
+        $id = $_SESSION['UserID'];
 
-        $file = \Model\File::getFile($fileName);
+        $file = \Model\File::getFile($fileName, $id);
 
         if ($file == null)
             return $fileName . ' does not exist in "Your files".';
 
-        $id = $_SESSION['UserID'];
         $userDir = './Files/' . $id;
 
         unlink($userDir . '/' . $fileName);
 
         global $db;
 
+        $db->exec('PRAGMA foreign_keys = ON;');
         $stmt = $db->prepare('DELETE FROM File WHERE UserID = ?' . ' AND FileName = ?;');
         $stmt->bindParam(1, $id, \PDO::PARAM_STR);
         $stmt->bindParam(2, $fileName, \PDO::PARAM_STR);
@@ -69,6 +72,27 @@ class File
         }
 
         return $fileName . ' has successfully been deleted.';
+    }
+
+    /**
+     * Deletes permanently the folder of an user
+     * @author Viviane Qian
+     * @param int $userID the id of an user
+     * @return bool true if it went well, false if not
+     */
+    public static function deleteFolder($userID)
+    {   
+        $folder = './Files/' . $userID;
+
+        if (!is_dir($folder))
+            return false;
+
+        foreach (scandir($folder) as $file) {
+            if($file == '.' or $file == '..')
+                unlink($folder . '/' . $file);
+        }
+
+        return rmdir($folder);
     }
 
     /**
@@ -81,7 +105,7 @@ class File
         $shareEmail = $_POST['email'];
         $fileName = $_POST['fileName'];
 
-        $file = \Model\File::getFile($fileName);
+        $file = \Model\File::getFile($fileName, $_SESSION['UserID']);
         $shareUserId = \Model\Users::getUser($shareEmail);
 
         if ($file == null)
@@ -110,14 +134,16 @@ class File
      * Gets a file's info from the database
      * @author Viviane Qian
      * @param string $fileName the name of the file you want info on
+     * @param int $userID the ID of the user sharing the file
      * @return array containing the info from the database if it went well, an error if not
      */
-    public static function getFile($fileName)
+    public static function getFile($fileName, $userID)
     {
         global $db;
 
-        $stmt = $db->prepare('SELECT * FROM File where FileName = ?;');
+        $stmt = $db->prepare('SELECT * FROM File where FileName = ? AND UserID = ?;');
         $stmt->bindParam(1, $fileName, \PDO::PARAM_STR);
+        $stmt->bindParam(2, $userID, \PDO::PARAM_STR);
         if ($stmt->execute() === false) {
             return 'Error: ' . $stmt->errorCode();
         }
@@ -245,6 +271,27 @@ class File
         return $fileList;
     }
 
+    /**
+     * Gets the category of a file
+     * @author Viviane Qian
+     * @param string $fileName the name of the file you want the category
+     * @return string containing the category if it went well, null if not
+     */
+    public static function getCategory($fileName)
+    {   
+        $extension = explode('.', $fileName);
+        if ($extension == null)
+            return null;
+        if (in_array(strtolower($extension[1]), ['txt', 'php', 'js', 'java', 'py', 'c', 'css', 'cpp']))
+            return 'Text';
+        if (in_array(strtolower($extension[1]), ['jpg', 'jpeg', 'png']))
+            return 'Image';
+        if (in_array(strtolower($extension[1]), ['mp3', 'ogg', 'm4a']))
+            return 'Music';
+        if (in_array(strtolower($extension[1]), ['mp4', 'avi', 'mov']))
+            return 'Video';
+        return 'Unknown';
+    }
 
     //---------------------------------------------------------------------------
     /**

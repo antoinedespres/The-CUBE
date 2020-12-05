@@ -3,8 +3,8 @@
 echo '
 
 <div id="editFile">
-    <form method="POST">
-        <textarea name="editedContent" rows = 200 cols = 80>' . $data . 
+    <form method="POST" action="/edit">
+        <textarea name="editedContent" rows = 15 cols = 80>' . $data . 
              
         '</textarea>
 

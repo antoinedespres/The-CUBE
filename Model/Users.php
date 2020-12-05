@@ -9,22 +9,34 @@ require 'lib/vendor/autoload.php';
 
 class Users
 {
-	public static function register()
-	// TODO Check if email not already in db, recovery mail different from email if not empty and User is at least 13 years old
+	public static function list()
 	{
 		global $db;
 
-		$password = password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 12]);
+		$stmt = $db->prepare("SELECT * FROM file;");
+		if ($stmt->execute() === false) { //this is early return
+			echo $stmt->errorCode();
+			return;
+		}
+		return $stmt->fetchAll();
+	}
 
-		$stmt = $db->prepare("insert into User (FirstName, LastName, Email, Password, RecoveryEmail, PhoneNumber, BirthDate) values (?, ?, ?, ?, ?, ?, ?);");
-		$stmt->bindParam(1, $_POST['firstName'], \PDO::PARAM_STR);
-		$stmt->bindParam(2, $_POST['lastName'], \PDO::PARAM_STR);
-		$stmt->bindParam(3, $_POST['email'], \PDO::PARAM_STR);
-		$stmt->bindParam(4, $password, \PDO::PARAM_STR);
-		$stmt->bindParam(5, $_POST['recoveryEmail'], \PDO::PARAM_STR);
-		$stmt->bindParam(6, $_POST['phoneNumber'], \PDO::PARAM_STR);
-		$stmt->bindParam(7, $_POST['birthDate'], \PDO::PARAM_STR);
-		$stmt->execute();
+	public static function register()
+	{
+		global $db;
+		if (strtotime($_POST['birthDate']) < strtotime('-13 years')) {
+			$password = password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 12]);
+
+			$stmt = $db->prepare("insert into User (FirstName, LastName, Email, Password, BirthDate) values (?, ?, ?, ?, ?);");
+			$stmt->bindParam(1, $_POST['firstName'], \PDO::PARAM_STR);
+			$stmt->bindParam(2, $_POST['lastName'], \PDO::PARAM_STR);
+			$stmt->bindParam(3, $_POST['email'], \PDO::PARAM_STR);
+			$stmt->bindParam(4, $password, \PDO::PARAM_STR);
+			$stmt->bindParam(5, $_POST['birthDate'], \PDO::PARAM_STR);
+			$stmt->execute();
+		} else {
+			return 'ERR_TOOYOUNG';
+		}
 	}
 
 	public static function isRegisterValid()
@@ -33,10 +45,8 @@ class Users
 		if ($_POST['email']);
 	}
 
-	/**
-	 * return the UserId correponding to the email, null if not found
-	 */
-	public static function getUser($email){
+	public static function getUser($email)
+	{
 		global $db;
 
 		$stmt = $db->prepare("SELECT UserID FROM User where Email = ?;");
@@ -46,6 +56,12 @@ class Users
 		return $stmt->fetch();
 	}
 
+	/**
+	 * Login function
+	 * 
+	 * @author Antoine Després
+	 * @return string error code
+	 */
 	public static function login()
 	{
 		global $db;
@@ -54,11 +70,11 @@ class Users
 		$stmt->bindParam(1, $_POST['email'], \PDO::PARAM_STR);
 		$stmt->execute();
 		$user = $stmt->fetch();
-		if (isset($_POST['email'])) {
+		if (isset($_POST['email']) && isset($user)) {
 			if (password_verify($_POST['password'], $user['Password'])) {
 				$_SESSION['UserID'] = $user['UserID'];
 				$_SESSION['FirstName'] = $user['FirstName'];
-				render('home/home', []);
+				return ('Connected!');
 			} else {
 				return "ERR_WRONGPASSWORD";
 			}
@@ -67,23 +83,17 @@ class Users
 		}
 	}
 
-	public static function list()
-	{
-		global $db;
-
-		$stmt = $db->prepare("SELECT * FROM User;");
-		if ($stmt->execute() === false) { //this is early return
-			echo $stmt->errorCode();
-			return;
-		}
-		return $stmt->fetchAll();
-	}
-
-	public static function forgottenPassword($data)
+	/**
+	 * Creates a record in a temporary table and sends an email with a reset token
+	 * 
+	 * @author Antoine Després
+	 * @return string error code
+	 */
+	public static function forgottenPassword()
 	{
 		$error = "";
 		global $db;
-		$email = $data['email'];
+		$email = $_POST['email'];
 		//ERR_EMPTYEMAIL if mail empty -> comparer avec cette constante dans la vue
 		// If not null and not empty
 		if (isset($email) && (!empty($email))) {
@@ -178,13 +188,55 @@ your account and change your security password as someone may have guessed it.</
 		}
 	}
 
+	/**
+	 * Reads the token and email in the url to load a reset password form
+	 * 
+	 * @author Antoine Després
+	 * @return string error code
+	 */
 	public static function resetPassword($data)
 	{
 		// WORK IN PROGRESS...
 	}
 
+	/**
+	 * Disconnects the user
+	 * 
+	 * @author Antoine Després
+	 */
 	public static function disconnect()
 	{
-		$_SESSION = null;
+		$_SESSION = array();
+	}
+
+	/**
+	 * Account deletion function. Checks the password before deleting.
+	 * 
+	 * @author Antoine Després
+	 * @return string error code
+	 */
+	public static function deleteAccount()
+	{	
+		\Model\File::deleteFolder(6);
+		global $db;
+
+		if (isset($_SESSION['UserID'])) {
+			$stmt = $db->prepare("SELECT * FROM User where UserID = ?;");
+			$stmt->bindParam(1, $_SESSION['UserID'], \PDO::PARAM_STR);
+			$stmt->execute();
+			$user = $stmt->fetch();
+
+			if (password_verify($_POST['password'], $user['Password'])) {
+				$db->exec('PRAGMA foreign_keys = ON;');
+				$stmt = $db->prepare("DELETE FROM User WHERE UserID = ?;");
+				$stmt->bindParam(1, $_SESSION['UserID'], \PDO::PARAM_STR);
+				$stmt->execute();
+				\Model\File::deleteFolder($_SESSION['UserID']);
+				$_SESSION = array();
+				return 'OK_ACCOUNTDELETED';
+			}
+		} else {
+			return 'ERR_NOTCONNECTED';
+		}
 	}
 }

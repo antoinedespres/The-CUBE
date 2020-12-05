@@ -3,7 +3,7 @@
 include("view/menu.php");
 
 echo '
-<form method="POST" action="/upload" enctype="multipart/form-data">
+<form method="POST" action="/uploadFile" enctype="multipart/form-data">
 	<fieldset>
 		<legend>Upload</legend>
 
