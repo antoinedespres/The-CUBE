@@ -1,178 +1,266 @@
 <?php
-
+// gérer les catégories
 namespace Model;
 
-/**
- * note : path désigne le chemin du fichier sur le cloud utilisateur
- * 
- */
 class File
-{   
+{
 
     /**
-     * enregistre le fichier dans le dossier de l'user et dans la bdd
-     * attention : limite de 2MB par défaut, à configurer dans php.ini
+     * Uploads a file of the currently logged in user to the server
+     * @author Viviane Qian
+     * @return string containing a success message if it went well, an error message if not
      */
     public static function upload()
     {
-        $id = $_SESSION["UserID"];
-        $uploadDir = './Files/' . $id;
+        $id = $_SESSION['UserID'];
+        $userDir = './Files/' . $id;
 
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir);
+        if (!is_dir($userDir)) {
+            mkdir($userDir);
         }
 
-        if ($_FILES["file"]["error"] > 0)
-            $response = 'Error: ' . $_FILES["file"]["error"];
-        else {
-            if (file_exists($uploadDir . "/" . $_FILES["file"]["name"]))
-                $response = $_FILES["file"]["name"] . " already exists.";
-            else {
-                move_uploaded_file($_FILES["file"]["tmp_name"], $uploadDir . "/" . $_FILES["file"]["name"]);
-                
-                // à changer 
-                $categ="unknown";
+        if ($_FILES['file']['error'] > 0)
+            return 'Error: ' . $_FILES['file']['error'];
 
-                global $db;
-                
-		        $stmt = $db->prepare("insert into File (FileName, Category, UserID) values (?, ?, ?);");
-		        $stmt->bindParam(1, $_FILES["file"]["name"], \PDO::PARAM_STR);
-		        $stmt->bindParam(2, $categ, \PDO::PARAM_STR);
-                $stmt->bindParam(3, $id, \PDO::PARAM_STR);
-                $stmt->execute();
+        if (file_exists($userDir . '/' . $_FILES['file']['name']))
+            return $_FILES['file']['name'] . ' already exists.';
 
-                $response = $_FILES["file"]["name"] . " has been uploaded.";
-            }
+        move_uploaded_file($_FILES['file']['tmp_name'], $userDir . '/' . $_FILES['file']['name']);
+
+        global $db;
+
+        $stmt = $db->prepare('insert into File (FileName, Category, UserID) values (?, ?, ?);');
+        $stmt->bindParam(1, $_FILES['file']['name'], \PDO::PARAM_STR);
+        $stmt->bindParam(2, 'unknown', \PDO::PARAM_STR);
+        $stmt->bindParam(3, $id, \PDO::PARAM_STR);
+        if ($stmt->execute() === false) {
+            return 'Error: ' . $stmt->errorCode();
         }
-        return $response;
+
+        return $_FILES['file']['name'] . ' has been uploaded.';
     }
 
     /**
-     * 
+     * Deletes permanently a file of the currently logged in user from the server and the database
+     * @author Viviane Qian
+     * @return string containing a success message if it went well, an error message if not
+     */
+    public static function delete()
+    {
+        $fileName = $_POST['fileName'];
+
+        $file = \Model\File::getFile($fileName);
+
+        if ($file == null)
+            return $fileName . ' does not exist in "Your files".';
+
+        $id = $_SESSION['UserID'];
+        $userDir = './Files/' . $id;
+
+        unlink($userDir . '/' . $fileName);
+
+        global $db;
+
+        $stmt = $db->prepare('DELETE FROM File WHERE UserID = ?' . ' AND FileName = ?;');
+        $stmt->bindParam(1, $id, \PDO::PARAM_STR);
+        $stmt->bindParam(2, $fileName, \PDO::PARAM_STR);
+        if ($stmt->execute() === false) {
+            return 'Error: ' . $stmt->errorCode();
+        }
+
+        return $fileName . ' has successfully been deleted.';
+    }
+
+    /**
+     * Shares the access of an user's file to another user
+     * @author Viviane Qian
+     * @return string containing a success message if it went well, an error message if not
      */
     public static function share()
     {
-        $shareEmail = $_POST["email"];
-        $fileName = $_POST["fileName"];
-        
-        $fileId = \Model\File::getFile($fileName);
-        $userId = \Model\Users::getUser($shareEmail);
+        $shareEmail = $_POST['email'];
+        $fileName = $_POST['fileName'];
 
-        if($fileId == null)
-            $response = $fileName . ' does not exist in "Your files."';
-        elseif($userId == null)
-            $response = $shareEmail . ' is not an user e-mail.';
-        else {
-            global $db;
+        $file = \Model\File::getFile($fileName);
+        $shareUserId = \Model\Users::getUser($shareEmail);
 
-            $stmt = $db->prepare("insert into HasAccessTo (FileID, UserID) values (?, ?);");
-            $stmt->bindParam(1, $fileId['FileID'], \PDO::PARAM_STR);
-            $stmt->bindParam(2, $userId['UserID'], \PDO::PARAM_STR);
-            if ($stmt->execute() === false) { //this is early return
-                echo $stmt->errorCode();
-                return;
+        if ($file == null)
+            return $fileName . ' does not exist in "Your files".';
+
+        if ($shareUserId == null or $shareUserId == $_SESSION['UserID'])
+            return $shareEmail . ' is not a valid e-mail.';
+
+        global $db;
+
+        $stmt = $db->prepare('INSERT INTO HasAccessTo (FileID, UserID) VALUES (?, ?);');
+        $stmt->bindParam(1, $file['FileID'], \PDO::PARAM_STR);
+        $stmt->bindParam(2, $shareUserId['UserID'], \PDO::PARAM_STR);
+        try {
+            if ($stmt->execute() === false) {
+                return 'Error: ' . $stmt->errorCode();
             }
-            
-            $response = $fileName . ' has successfully been shared to ' . $shareEmail;
+        } catch (\PDOException $e) {
+            return $fileName . ' has already been shared to ' . $shareEmail;
         }
-        return $response;
+
+        return $fileName . ' has successfully been shared to ' . $shareEmail;
     }
 
+    /**
+     * Gets a file's info from the database
+     * @author Viviane Qian
+     * @param string $fileName the name of the file you want info on
+     * @return array containing the info from the database if it went well, an error if not
+     */
     public static function getFile($fileName)
     {
         global $db;
 
-		$stmt = $db->prepare("SELECT FileID FROM File where FileName = ?;");
-		$stmt->bindParam(1, $fileName, \PDO::PARAM_STR);
-		$stmt->execute();
+        $stmt = $db->prepare('SELECT * FROM File where FileName = ?;');
+        $stmt->bindParam(1, $fileName, \PDO::PARAM_STR);
+        if ($stmt->execute() === false) {
+            return 'Error: ' . $stmt->errorCode();
+        }
 
-		return $stmt->fetch();
+        return $stmt->fetch();
     }
 
     /**
-     * retourne un tableau contenant les informations des fichiers de l'user
+     * Gets all the files' info of the currently logged in user from the database
+     * @author Viviane Qian
+     * @return array containing the info from the database if it went well, an error if not
      */
     public static function getFiles()
     {
         global $db;
 
-		$stmt = $db->prepare("select * from file where UserID=" . $_SESSION["UserID"] . ";");
-		if ($stmt->execute() === false) { //this is early return
-			echo $stmt->errorCode();
-			return;
+        $stmt = $db->prepare('SELECT * FROM File WHERE UserID=' . $_SESSION['UserID'] . ';');
+        if ($stmt->execute() === false) {
+            return 'Error: ' . $stmt->errorCode();
         }
 
         return $stmt->fetchAll();
     }
 
     /**
-     * retourne un tableau contenant les informations des fichiers partagé à l'user
+     * Gets all the info of the files shared to the currently logged in user from the database
+     * @author Viviane Qian
+     * @return array containing the info from the database if it went well, an error if not
      */
     public static function getSharedFiles()
     {
         global $db;
 
-		$stmt = $db->prepare("select * from HasAccessTo where UserID=" . $_SESSION["UserID"] . ";");
-		if ($stmt->execute() === false) { //this is early return
-			echo $stmt->errorCode();
-			return;
+        $stmt = $db->prepare('SELECT * FROM HasAccessTo WHERE UserID=' . $_SESSION['UserID'] . ';');
+        if ($stmt->execute() === false) {
+            return 'Error: ' . $stmt->errorCode();
         }
 
         $sharedFiles = $stmt->fetchAll();
+        $queryResult = array();
 
-        foreach($sharedFiles as $files)
-        $stmt = $db->prepare("select * from File where FileID=" . $files['FileID'] . ";");
-		if ($stmt->execute() === false) { //this is early return
-			echo $stmt->errorCode();
-			return;
+        foreach ($sharedFiles as $files) {
+            $stmt = $db->prepare('SELECT * FROM File as f, User as u WHERE FileID=' . $files['FileID'] . ' AND f.UserID = u.UserID;');
+            if ($stmt->execute() === false) {
+                return 'Error: ' . $stmt->errorCode();
+            }
+            array_push($queryResult, $stmt->fetch());
         }
-        return $stmt->fetchAll();
+        return $queryResult;
     }
 
     /**
-     * retourne les liens de téléchargement des fichiers appartenant à l'user
+     * Gets the download link of all the files of the currently logged in user
+     * @author Viviane Qian
+     * @return string containing the formatted download links
      */
     public static function list()
     {
         $files = \Model\File::getFiles();
         $dir = './Files/' . $_SESSION["UserID"];
-        $fileList="";
-        foreach ($files as $file){
-            $fileList = $fileList . '<a href="' . $dir . "/" . $file['FileName']. '" download>' . $file['FileName'] . '</a><br>';
+        $fileList = 
+            '<table>
+                <thead>
+                    <tr>
+                        <th colspan="3">Your files</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>File</td>
+                    <td>Category</td>
+                    <td>Upload time</td>
+                </tr>';
+
+        foreach ($files as $file) {
+            $fileList = $fileList . 
+                '<tr>
+                    <td><a href="' . $dir . '/' . $file['FileName'] . '" download>' . $file['FileName'] . '</a></td>
+                    <td>' . $file['Category'] . '</td> 
+                    <td>' . $file['UploadDateTime'] . '</td>
+                </tr>';
         }
-		return $fileList;
+        $fileList = $fileList . 
+                '</tbody>
+            </table>';
+        return $fileList;
     }
 
     /**
-     * retourne les liens de téléchargement des fichiers partagé à l'user
+     * Gets the download link of all the files shared to the currently logged in user
+     * @author Viviane Qian
+     * @return string containing the formatted download links
      */
     public static function sharedList()
     {
         $files = \Model\File::getSharedFiles();
         $dir = './Files/';
-        $fileList="";
-        foreach ($files as $file){
-            $fileList = $fileList . '<a href="' . $dir . "/" . $file['UserID'] . "/" . $file['FileName']. '" download>' . $file['FileName'] . '</a><br>';
+        $fileList = 
+            '<table>
+                <thead>
+                    <tr>
+                        <th colspan="4">Your shared files</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>File</td>
+                    <td>Category</td>
+                    <td>Upload time</td>
+                    <td>Owner</td>
+                </tr>';
+
+        foreach ($files as $file) {
+            $fileList = $fileList . 
+                '<tr>
+                    <td><a href="' . $dir . '/' . $file['UserID'] . '/' . $file['FileName'] . '" download>' . $file['FileName'] . '</a></td>
+                    <td>' . $file['Category'] . '</td> 
+                    <td>' . $file['UploadDateTime'] . '</td> 
+                    <td>' . $file['Email'] . '</td> 
+                </tr>';
         }
-		return $fileList;
+        $fileList = $fileList . 
+                '</tbody>
+            </table>';
+        return $fileList;
     }
 
 
     //---------------------------------------------------------------------------
-        /**
+    /**
      * retourne la liste des fichiers de l'user connecté
      * TODO : ajouter les listes des fichiers accédés seulement en partage
      */
     public static function getFiles2()
-    {   
+    {
         global $db;
-        $stmt = $db->prepare("SELECT * from file where UserID=" . $_SESSION["UserID"] . " and FileName LIKE :searchValue;");
-        $searchValue = '%'.$_POST["search"].'%';
+        $stmt = $db->prepare('SELECT * from file where UserID=' . $_SESSION['UserID'] . ' and FileName LIKE :searchValue;');
+        $searchValue = '%' . $_POST["search"] . '%';
         $stmt->bindValue(':searchValue', $searchValue, \PDO::PARAM_STR);
 
-		if ($stmt->execute() === false) { //this is early return
+        if ($stmt->execute() === false) { //this is early return
             echo $stmt->errorCode();
-			return;
+            return;
         }
 
         return $stmt->fetchAll();
@@ -187,16 +275,15 @@ class File
     public static function list2()
     {
         $files = \Model\File::getFiles2();
-        if ($files == null){
+        if ($files == null) {
             $response = "No existing file or directory named " . $_POST["search"];
-        }
-        elseif(isset($files)){
+        } elseif (isset($files)) {
             $response = "";
             $dir = './Files/' . $_SESSION["UserID"];
-            foreach ($files as $file){
-                $response = $response . '<a href="' . $dir . "/" . $file['FileName']. '" download>' . $file['FileName'] . '</a><br>';
+            foreach ($files as $file) {
+                $response = $response . '<a href="' . $dir . "/" . $file['FileName'] . '" download>' . $file['FileName'] . '</a><br>';
             }
         }
-		return $response;
+        return $response;
     }
 }
