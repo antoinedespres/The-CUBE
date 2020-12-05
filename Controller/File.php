@@ -15,6 +15,28 @@ class File
         render('file/upload', $response);
     }
 
+    public static function delete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            render('file/delete', []);
+            return;
+        }
+
+        $response = \Model\File::delete();
+        render('file/delete', $response);
+    }
+    
+    public static function share()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            render('file/share', []);
+            return;
+        }
+
+        $response = \Model\File::share();
+        render('file/share', $response);
+    }
+
     public static function list()
     {
         $files = \Model\File::list();
@@ -25,17 +47,6 @@ class File
     {
         $files = \Model\File::sharedList();
         render('file/drive', $files);
-    }
-
-    public static function share()
-    {
-        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            render('file/share', []);
-            return;
-        }
-
-        $response = \Model\File::share();
-        render('file/share', $response);
     }
 
     //---------------------------------------------------------
