@@ -32,16 +32,6 @@
 			</tr>
 			<tr>
 				<td>
-					<label for="recoveryEmail">Recovery email: </label>	
-					<input type="text" name="recoveryEmail">
-				</td>
-				<td>
-					<label for="phoneNumber">Phone number : </label>
-					<input type="text" name="phoneNumber">
-				</td>
-			</tr>
-			<tr>
-				<td>
 					<label class="requiredField" for="birthDate">Birth date: </label>
 					<input type="date" name="birthDate" required>
 				</td>

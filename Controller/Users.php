@@ -24,7 +24,8 @@ class Users
 			return;
 		}
 
-		\Model\Users::login();
+		$response = \Model\Users::login();
+		render('home/home', $response);
 	}
 
 	public function list()
@@ -53,10 +54,16 @@ class Users
 
 	public function disconnect()
 	{
+		\Model\Users::disconnect($_POST);
+		render('home/home');
+	}
+
+	public function deleteAccount()
+	{
 		if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-			render('user/resetPassword_form', []);
+			render('user/deleteAccount_form', []);
 			return;
 		}
-		\Model\Users::disconnect($_POST);
+		$response = \Model\Users::deleteAccount();	
 	}
 }

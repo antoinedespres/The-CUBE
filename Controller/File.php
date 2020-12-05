@@ -3,7 +3,7 @@
 namespace Controller;
 
 class File
-{
+{   
     public static function upload()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {

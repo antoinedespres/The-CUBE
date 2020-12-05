@@ -4,12 +4,9 @@ CREATE TABLE if not exists User (
     LastName text not null, 
     Email text unique not null, 
     Password text not null, 
-    RecoveryEmail text, 
-    PhoneNumber text, 
     BirthDate text not null, 
     LastLoginTime text, 
-    AccountCreationTime text DEFAULT CURRENT_TIMESTAMP, 
-    DarkMode numeric default 0
+    AccountCreationTime text DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE if not exists PasswordResetTemp (
@@ -22,7 +19,6 @@ CREATE TABLE if not exists File (
     FileID integer PRIMARY KEY AUTOINCREMENT,
     FileName text not null,
     UploadDateTime numeric DEFAULT CURRENT_TIMESTAMP,
-    SuppressionDateTime numeric,
     Category text,
     UserID integer,
     FOREIGN KEY (UserID)

@@ -8,14 +8,13 @@ class File_Editing{
         global $db;
 
    
-		$stmt = $db->prepare("select * from File where FileID = ?");
+		$stmt = $db->prepare("select FileName from File where FileID = ?");
 		$stmt->bindParam(1, $_GET['file_id'], \PDO::PARAM_INT);
         $stmt->execute();
-        $file = $stmt->fetch();
 
-        $stmt = $db->prepare("select Path from HasAccessTo where FileID = ?");
-        $stmt->bindParam(1, $file['FileID'], \PDO::PARAM_INT);
-        $stmt->execute();
+        // $stmt = $db->prepare("select Path from HasAccessTo where FileID = ?");
+        // $stmt->bindParam(1, $file['FileID'], \PDO::PARAM_INT);
+        // $stmt->execute();
 
         return $stmt->fetch();
     }
