@@ -13,6 +13,7 @@ return [
     '/resetPassword' =>'Controller\Users@resetPassword',
     '/disconnect' => 'Controller\Users@disconnect',
     '/upload' => 'Controller\File@upload',
+    '/delete' => 'Controller\File@delete',
     '/sharedFiles' => 'Controller\File@sharedList',
     '/share' => 'Controller\File@Share',
     '/yourFiles' => 'Controller\File@list',
