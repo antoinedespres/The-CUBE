@@ -13,7 +13,7 @@ CREATE TABLE if not exists User (
 );
 
 CREATE TABLE if not exists PasswordResetTemp (
-    Email text not null primary key references User(Email), 
+    Email text not null primary key references User(Email) ON DELETE CASCADE, 
     Key text not null, 
     ExpiryDate text
 );
@@ -26,7 +26,7 @@ CREATE TABLE if not exists File (
     Category text,
     UserID integer,
     FOREIGN KEY (UserID)
-        references User (UserID)
+        references User (UserID) ON DELETE CASCADE
 );
 
 CREATE TABLE if not exists HasAccessTo(
@@ -34,9 +34,9 @@ CREATE TABLE if not exists HasAccessTo(
     UserID integer,
 
     FOREIGN KEY (FileID)
-        references File (FileID),
+        references File (FileID) ON DELETE CASCADE,
     FOREIGN KEY (UserID)
-        references User (UserID),
+        references User (UserID) ON DELETE CASCADE,
     PRIMARY KEY (FileID, UserID)
 );
 
