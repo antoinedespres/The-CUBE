@@ -2,18 +2,26 @@
 /* ---------
 	REGISTER
 ------------ */
+#register{
+	background-color : #2b2142;
+	height : 100vh;
+}
+
 #register legend, label, span {
 	font-family: sans-serif;
 	font-size:13px;
+	color:white;
 }
 
 #register form {
 	width:550px;
-	margin: 12% auto;
+	margin: 0 auto;
+	position:relative;
+	top : 250px;
 }
 #register fieldset {
-	background-color : #fffae9;
-	border:1px solid #eedb9b;
+	background-color : rgb(139, 119, 155);
+	border:1px solid black;
 }
 #register table {
 	margin : 0 auto;
@@ -37,11 +45,12 @@
 	margin : 10px 44%;
 	border-radius:4px;
 	padding:5px;
-	background-color:#fffae9;
-	border:1px solid #eedb9b;
+	background-color:rgb(139, 119, 155);;
+	border:1px solid white;
+	color:white;
 }
 #register form input[type=submit]:hover {
- background-color:#f7eac0;
+ background-color: rgb(103, 89, 116);
 }
 
 /* ---------
@@ -55,12 +64,15 @@
 
 #login form {
 	width:450px;
-	margin: 12% auto;
+	margin: 0 auto;
+	position : relative;
+	top:250px;
 }
 #login fieldset {
-	background-color : #fffae9;
-	border:1px solid #eedb9b;
+	background-color : rgb(139, 119, 155);
+	border:1px solid white;
 	text-align:center;
+	color:white;
 }
 
 #login legend {
@@ -72,12 +84,13 @@
 	margin : 10px 44%;
 	border-radius:4px;
 	padding:5px;
-	background-color:#fffae9;
-	border:1px solid #eedb9b;
+	background-color:rgb(139, 119, 155);
+	border:1px solid white;
+	color:white;
 }
 
 #login form input[type=submit]:hover {
-	background-color:#f7eac0;
+	background-color:rgb(103, 89, 116);
 }
 
 /* ---------
@@ -88,10 +101,11 @@
 	/* border: none; */
 	margin-top: 8px;
 	font-size: 15px;
+	z-index:10;
 }
 
 /* ---------
-   HOME
+     HOME
 ------------- */
 #home {
 	background-color : #2b2142;
@@ -129,4 +143,59 @@
 }
 #home #container{
 	padding-top: 100px;
+}
+/* ---------
+   	 MENU
+------------- */
+
+nav{
+	width: 100%;
+    top: 0px;
+	position: fixed;
+}
+
+#menu ul {
+	 padding: 0;
+	 margin:0;
+     list-style-type:none;
+	 text-align:center;
+}
+
+#menu li {
+    margin-bottom: 0.2em;
+    display: inline-block;
+    background-color: rgb(139, 119, 155);
+	width: 19%;
+}
+
+#menu li ul {
+    width: 100%;
+    margin-top: 0;
+    position: absolute;
+}
+
+#menu li a {
+	padding:12px;
+	display:block;
+	color: white;
+	font-family: 'Yanone Kaffeesatz', sans-serif;
+	font-size : 20px;
+	text-decoration : none;
+}
+
+#menu li a:hover{
+    transition: background-color 0.5s;
+}
+
+#menu li a:hover, .clique {
+    background-color: rgb(99, 86, 110);
+}
+
+#menu ul li ul li{
+	display: none;
+}
+
+#menu ul li:hover ul li{
+    display: table;
+    margin: 0;
 }

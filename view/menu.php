@@ -1,19 +1,29 @@
 <?php
-       if (isset($_SESSION['UserID'])){
-              echo '
-              <div class="containerChild">
-                     <span class="button"><a href="/">Home</a></span>
-                     <span class="button"><a href="users">List</a></span>
-                     <span class="button"><a href="uploadFile">Upload a file</a></span>
-                     <span class="button"><a href="deleteFile">Delete a file</a></span>
-                     <span class="button"><a href="shareFile">Share your files</a></span>
-                     <span class="button"><a href="yourFiles">Your files</a></span>
-                     <span class="button"><a href="sharedFiles">Your shared files</a></span>
-                     <span class="button"><a href="edit">Edit</a></span>
-                     <span class="button"><a href="deleteAccount">Delete account</a></span>
-                     <span class="button"><a href="disconnect">Disconnect</a></span>
-              </div>
-       </div>';
-              include('file/searchBar.php');
-       }
+if (isset($_SESSION['UserID'])) {
+       echo '
+              <nav>
+                     <div id="menu">
+                            <ul>
+                                   <li><a href="/">Home</a></li><!-- @whitespace
+                                   --><li><a>File</a>
+                                          <ul>
+                                                 <li><a href="uploadFile">Upload</a></li>
+                                                 <li><a href="deleteFile">Delete</a></li>
+                                                 <li><a href="shareFile">Share</a></li>
+                                                 <li><a href="yourFiles">Show my files</a></li>
+                                                 <li><a href="edit">Edit</a></li>
+                                          </ul>
+                                   </li><!-- @whitespace
+                                   --><li><a>Account</a>
+                                          <ul>
+                                                 <li><a href="deleteAccount">Delete</a></li>
+                                                 <li><a href="changePassword">Change password</a></li>
+                                                 <li><a href="disconnect">Disconnect</a></li>
+                                          </ul>
+                                   </li>
+                            </ul>
+                     </div>
+              </nav>';
+       include('file/searchBar.php');
+}
 ?>

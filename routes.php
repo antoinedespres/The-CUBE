@@ -5,22 +5,27 @@
 // values are of the form `Controller@action`, which allows for a controller to
 // handle multiple actions.
 return [
-    // créer les routes GET et POST
-    '/users' => 'Controller\Users@list',
-    '/register' => 'Controller\Users@register',
-    '/login' => 'Controller\Users@login',
-    '/forgottenpassword' => 'Controller\Users@forgottenPassword',
-    '/resetPassword' =>'Controller\Users@resetPassword',
-    '/deleteAccount' => 'Controller\Users@deleteAccount',
-    '/disconnect' => 'Controller\Users@disconnect',
-    '/uploadFile' => 'Controller\File@upload',
-    '/deleteFile' => 'Controller\File@delete',
-    '/sharedFiles' => 'Controller\File@sharedList',
-    '/shareFile' => 'Controller\File@Share',
-    '/yourFiles' => 'Controller\File@list',
-    '/search' => 'Controller\File@searchFiles',
-    '/createDir' => 'Controller\File@createDirectory',
-    '/edit' => 'Controller\File_Editing@showFiles',
-    '/File_Editing' => 'Controller\File_Editing@fileContent',
-    '/' => 'Controller\Home@get'
+    'loggedOut' => [
+        '/users' => 'Controller\Users@list',
+        '/register' => 'Controller\Users@register',
+        '/login' => 'Controller\Users@login',
+        '/forgottenPassword' => 'Controller\Users@forgottenPassword',
+        '/resetPassword' => 'Controller\Users@resetPassword',
+        '/' => 'Controller\Home@get'
+    ],
+    'loggedIn' => [
+        '/users' => 'Controller\Users@list',
+        '/deleteAccount' => 'Controller\Users@deleteAccount',
+        '/changePassword' => 'Controller\Users@changePassword',
+        '/disconnect' => 'Controller\Users@disconnect',
+        '/uploadFile' => 'Controller\File@upload',
+        '/deleteFile' => 'Controller\File@delete',
+        '/shareFile' => 'Controller\File@Share',
+        '/yourFiles' => 'Controller\File@getFiles',
+        '/search' => 'Controller\File@searchFiles',
+        '/createDir' => 'Controller\File@createDirectory',
+        '/edit' => 'Controller\File_Editing@showFiles',
+        '/File_Editing' => 'Controller\File_Editing@fileContent',
+        '/' => 'Controller\Home@get'
+    ]
 ];

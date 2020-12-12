@@ -12,6 +12,9 @@
 			<label for="password">Password : </label>
 			<input type="password" name="password" required>
 		</fieldset>
-		<input type="submit" value="Sign In">
+		<input type="submit" value="DELETE">
 	</form>
 </div>
+
+<?php 
+	echo $data;

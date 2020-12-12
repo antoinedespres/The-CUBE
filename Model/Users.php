@@ -13,8 +13,8 @@ class Users
 	{
 		global $db;
 
-		$stmt = $db->prepare("SELECT * FROM file;");
-		if ($stmt->execute() === false) { //this is early return
+		$stmt = $db->prepare("SELECT * FROM User;");
+		if ($stmt->execute() === false) {
 			echo $stmt->errorCode();
 			return;
 		}
@@ -24,27 +24,56 @@ class Users
 	public static function register()
 	{
 		global $db;
-		if (strtotime($_POST['birthDate']) < strtotime('-13 years')) {
-			$password = password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 12]);
+		$email = $_POST['email'];
 
-			$stmt = $db->prepare("insert into User (FirstName, LastName, Email, Password, BirthDate) values (?, ?, ?, ?, ?);");
-			$stmt->bindParam(1, $_POST['firstName'], \PDO::PARAM_STR);
-			$stmt->bindParam(2, $_POST['lastName'], \PDO::PARAM_STR);
-			$stmt->bindParam(3, $_POST['email'], \PDO::PARAM_STR);
-			$stmt->bindParam(4, $password, \PDO::PARAM_STR);
-			$stmt->bindParam(5, $_POST['birthDate'], \PDO::PARAM_STR);
-			$stmt->execute();
+		if (isset($email) && (!empty($email))) {
+			$email = filter_var($email, FILTER_SANITIZE_EMAIL);
+			$email = filter_var($email, FILTER_VALIDATE_EMAIL);
+
+			// If email is incorrect
+			if (!$email) {
+				return "ERR_INVALIDEMAIL";
+			}
 		} else {
+			return 'ERR_INVALIDEMAIL';
+		}
+
+		if (strlen($_POST['firstName']) == 0 || strlen($_POST['lastName']) == 0 || strlen($_POST['password']) == 0) {
+			return "ERR_EMPTYFIELD";
+		}
+		if (strtotime($_POST['birthDate']) > strtotime('-13 years')) {
 			return 'ERR_TOOYOUNG';
 		}
+
+		$password = password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 12]);
+
+		$stmt = $db->prepare("INSERT INTO User (FirstName, LastName, Email, Password, BirthDate) values (?, ?, ?, ?, ?);");
+		$stmt->bindParam(1, $_POST['firstName'], \PDO::PARAM_STR);
+		$stmt->bindParam(2, $_POST['lastName'], \PDO::PARAM_STR);
+		$stmt->bindParam(3, $_POST['email'], \PDO::PARAM_STR);
+		$stmt->bindParam(4, $password, \PDO::PARAM_STR);
+		$stmt->bindParam(5, $_POST['birthDate'], \PDO::PARAM_STR);
+		try {
+			$stmt->execute();
+		} catch (\PDOException $e) {
+			return 'ERR_ALREADYEXISTS';
+		}
+
+		$user = Users::getUser($email);
+		$_SESSION['UserID'] = $user['UserID'];
+		$_SESSION['FirstName'] = $user['FirstName'];
+
+		if(!Users::updateTimestamp($_SESSION['UserID']))
+				return 'ERR_TIMESTAMPFAIL';
+
+		return 'OK_REGISTERED';
 	}
 
-	public static function isRegisterValid()
-	{
-		$valid = true;
-		if ($_POST['email']);
-	}
-
+	/**
+	 * Gets the UserID of the correponding e-mail from the database
+	 * @author Viviane Qian
+	 * @return int the UserID if it exists, null if not
+	 */
 	public static function getUser($email)
 	{
 		global $db;
@@ -66,21 +95,63 @@ class Users
 	{
 		global $db;
 
-		$stmt = $db->prepare("SELECT * FROM User where Email = ?;");
-		$stmt->bindParam(1, $_POST['email'], \PDO::PARAM_STR);
-		$stmt->execute();
-		$user = $stmt->fetch();
-		if (isset($_POST['email']) && isset($user)) {
-			if (password_verify($_POST['password'], $user['Password'])) {
-				$_SESSION['UserID'] = $user['UserID'];
-				$_SESSION['FirstName'] = $user['FirstName'];
-				return ('Connected!');
-			} else {
-				return "ERR_WRONGPASSWORD";
+		$email = $_POST['email'];
+
+		if (isset($email) && (!empty($email))) {
+			$email = filter_var($email, FILTER_SANITIZE_EMAIL);
+			$email = filter_var($email, FILTER_VALIDATE_EMAIL);
+
+			// If email is incorrect
+			if (!$email) {
+				return "ERR_INVALIDEMAIL";
 			}
 		} else {
-			return "ERR_NOACCOUNT";
+			return 'ERR_INVALIDEMAIL';
 		}
+
+		$stmt = $db->prepare("SELECT * FROM User where Email = ?;");
+		$stmt->bindParam(1, $email, \PDO::PARAM_STR);
+		$stmt->execute();
+		$user = $stmt->fetch();
+
+		if ($user == null)
+			return 'ERR_NOACCOUNT';
+
+		if (password_verify($_POST['password'], $user['Password'])) {
+			$_SESSION['UserID'] = $user['UserID'];
+			$_SESSION['FirstName'] = $user['FirstName'];
+
+			if(!Users::updateTimestamp($_SESSION['UserID']))
+				return 'ERR_TIMESTAMPFAIL';
+	
+			return ('OK_CONNECTED');
+		}
+		return "ERR_WRONGPASSWORD";
+	}
+
+	/**
+	 * Updates the last login timestamp
+	 * 
+	 * @author Antoine Després
+	 * @return true if the specified user exists, false otherwise
+	 */
+	public static function updateTimestamp($UserID)
+	{
+		global $db;
+		$stmt = $db->prepare("SELECT * FROM User WHERE UserID = ?;");
+		$stmt->bindParam(1, $UserID, \PDO::PARAM_STR);
+		$stmt->execute();
+		$user = $stmt->fetch();
+
+		if ($user != null) {
+			$currentTimestamp = date("Y-m-d H:i:s");
+			$stmt = $db->prepare("UPDATE User SET LastLoginTime = ? WHERE UserID = ?;");
+			$stmt->bindParam(1, $currentTimestamp, \PDO::PARAM_STR);
+			$stmt->bindParam(2, $UserID, \PDO::PARAM_STR);
+			$stmt->execute();
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -91,8 +162,8 @@ class Users
 	 */
 	public static function forgottenPassword()
 	{
-		$error = "";
 		global $db;
+
 		$email = $_POST['email'];
 		//ERR_EMPTYEMAIL if mail empty -> comparer avec cette constante dans la vue
 		// If not null and not empty
@@ -107,84 +178,78 @@ class Users
 				$stmt = $db->prepare("SELECT * FROM User WHERE Email = ?");
 				$stmt->bindParam(1, $email, \PDO::PARAM_STR);
 				$stmt->execute();
-				$count = $stmt->rowCount();
 				$user = $stmt->fetch();
-				print_r($user);
 			}
 
-			if ($count == 0) {
-				return "ERR_NORESULT";
+			if ($user == null) {
+				return "ERR_NOACCOUNT";
 			}
 
-			// If there is an error (invalid email)
-			if ($error != "") {
-				echo "<div class='error'>" . $error . "</div>
-   <br /><a href='javascript:history.go(-1)'>Go Back</a>";
-			} else { // DB update, mail sending
-				$expFormat = mktime(
-					date("H"),
-					date("i"),
-					date("s"),
-					date("m"),
-					date("d") + 1,
-					date("Y")
-				);
-				$expDate = date("Y-m-d H:i:s", $expFormat);
+			$expFormat = mktime(
+				date("H"),
+				date("i"),
+				date("s"),
+				date("m"),
+				date("d") + 1,
+				date("Y")
+			);
 
-				$key = md5(strval(2418 * 2) & $email);
-				$addKey = substr(md5(uniqid(rand(), 1)), 3, 10);
-				$key = $key . $addKey;
+			$expiryDate = date("Y-m-d H:i:s", $expFormat);
 
-				// Insert Temp Table
-				$stmt = $db->prepare("INSERT INTO PasswordResetTemp(Email, Key, ExpiryDate) VALUES (?, ?, ?);");
-				$stmt->bindParam(1, $email, \PDO::PARAM_STR);
-				$stmt->bindParam(2, $key, \PDO::PARAM_STR);
-				$stmt->bindParam(3, $expDate, \PDO::PARAM_STR);
-				$stmt->execute();
+			$key = md5(strval(2418 * 2) & $email);
+			$addKey = substr(md5(uniqid(rand(), 1)), 3, 10);
+			$key = $key . $addKey;
 
-				// Mail preparation
+			// Temp table : delete previous recording
+			$stmt = $db->prepare("DELETE FROM PasswordResetTemp WHERE Email = ?");
+			$stmt->bindParam(1, $email, \PDO::PARAM_STR);
+			$stmt->execute();
 
-				$body = '<p>Dear user,</p>';
-				$body .= '<p>Please click on the following link to reset your password.</p>';
-				$body .= '<p>-------------------------------------------------------------</p>';
-				$body .= '<p><a href="localhost/bananuage/resetpassword.php?key=' . $key . '&email=' . $email . '&action=reset" target="_blank">localhost/bananuage/resetpassword.php?key=' . $key . '&email=' . $email . '&action=reset</a></p>';
-				$body .= '<p>-------------------------------------------------------------</p>';
+			$stmt = $db->prepare("INSERT INTO PasswordResetTemp(Email, Key, ExpiryDate) VALUES (?, ?, ?);");
+			$stmt->bindParam(1, $email, \PDO::PARAM_STR);
+			$stmt->bindParam(2, $key, \PDO::PARAM_STR);
+			$stmt->bindParam(3, $expiryDate, \PDO::PARAM_STR);
+			$stmt->execute();
 
-				$body .= '<p>If you did not request this forgotten password email, no action 
-is needed, your password will not be reset. However, you may want to log into 
-your account and change your security password as someone may have guessed it.</p>';
-				$body .= '<p>Thanks,</p>';
-				$body .= '<p>Bananuage Account Services</p>';
+			// Mail preparation
+			global $config;
 
-				$mail = new PHPMailer();
+			$body = '<p>Dear The CUBE user,</p>';
+			$body .= '<p>We have received a password reset request for your account. Please click on the following link to reset your password.</p>';
+			$body .= '<p>-------------------------------------------------------------</p>';
+			$body .= '<p><a href="' . $config['server']['URL'] . '/resetPassword?key=' . $key . '&email=' . $email . '&action=reset" target="_blank">Reset password</a></p>';
+			$body .= '<p>-------------------------------------------------------------</p>';
 
-				$mail->IsSMTP();
-				$mail->Host = "smtp.gmail.com"; // Enter your host here
-				$mail->SMTPAuth = true;
-				$mail->Username = "your email"; // Enter your email here
-				$mail->Password = "yourPassword"; //Enter your password here
-				$mail->Port = 587;
+			$body .= '<p>If you did not make this request, no action 
+is needed, your password will not be reset.</p>';
+			$body .= '<p>Best regards,</p>';
+			$body .= '<p>The CUBE Account Services</p>';
 
-				$mail->IsHTML(true);
+			$mail = new PHPMailer();
 
-				$mail->From = "noreply@bananuage.com";
-				$mail->FromName = "Bananuage Account Services";
-				$mail->Sender = 'noreply@bananuage.com';
-				$mail->SetFrom('noreply@bananuage.com', 'Bananuage');
-				$mail->AddReplyTo('noreply@bananuage.com', 'Bananuage');
+			$mail->IsSMTP();
+			$mail->Host = $config['mail']['host'];
+			$mail->SMTPAuth = true;
+			$mail->Username = $config['mail']['email'];
+			$mail->Password = $config['mail']['password'];
+			$mail->Port = $config['mail']['port'];
 
-				$mail->Subject = 'Bananuage password request';
-				$mail->Body = $body;
-				$mail->AddAddress($email);
-				if (!$mail->Send()) {
-					echo "Mailer Error: " . $mail->ErrorInfo;
-				} else {
-					echo "<div class='error'>
-<p>An email has been sent to you with instructions on how to reset your password.</p>
-</div><br /><br /><br />";
-				}
+			$mail->IsHTML(true);
+
+			$mail->From = "noreply@thecube.com";
+			$mail->FromName = "The CUBE Account Services";
+			$mail->Sender = 'noreply@thecube.com';
+			$mail->SetFrom('noreply@thecube.com', 'The CUBE');
+			$mail->AddReplyTo('noreply@thecube.com', 'The CUBE');
+
+			$mail->Subject = 'The CUBE password request';
+			$mail->Body = $body;
+			$mail->AddAddress($email);
+			if (!$mail->Send()) {
+				return 'ERR_MAILER';
+			} else {
+				return 'OK_MAILSENT';
 			}
-		} else {
 		}
 	}
 
@@ -194,13 +259,84 @@ your account and change your security password as someone may have guessed it.</
 	 * @author Antoine Després
 	 * @return string error code
 	 */
-	public static function resetPassword($data)
+	public static function resetPassword()
 	{
-		// WORK IN PROGRESS...
+		global $db;
+
+		$email = $_SESSION['email'];
+		$key = $_SESSION['key'];
+		$_SESSION = array();
+		$currentDate = date("Y-m-d H:i:s");
+
+		if (isset($_POST['key']) && isset($_POST['email']) && isset($_POST['action']) && ($_POST['action'] == "reset")) {
+			$stmt = $db->prepare("SELECT * FROM PasswordResetTemp WHERE Email = ? and Key = ?;");
+			$stmt->bindParam(1, $email, \PDO::PARAM_STR);
+			$stmt->bindParam(2, $key, \PDO::PARAM_STR);
+			$stmt->execute();
+			$record = $stmt->fetch();
+
+			if ($record == null) {
+				return 'ERR_NORESETQUERY';
+			}
+
+			$expiryDate = $record['ExpiryDate'];
+
+			if ($expiryDate < $currentDate) {
+				return 'ERR_EXPIREDLINK';
+			}
+
+			$password1 = $_POST['password1'];
+			$password2 = $_POST['password2'];
+
+			if ($password1 != $password2) {
+				return 'ERR_PWDMISMATCH';
+			}
+
+			$password1 = password_hash($password1, PASSWORD_BCRYPT, ['cost' => 12]);;
+
+			$stmt = $db->prepare("UPDATE Users SET Password = ? WHERE Email = ?;");
+			$stmt->bindParam(1, $password1, \PDO::PARAM_STR);
+			$stmt->bindParam(2, $email, \PDO::PARAM_STR);
+			$stmt->execute();
+
+			$stmt = $db->prepare("DELETE FROM PasswordResetTemp Where Email = ?;");
+			$stmt->bindParam(1, $email, \PDO::PARAM_STR);
+			$stmt->execute();
+
+			return 'OK_PWDCHANGED';
+		}
+	}
+
+	public static function changePassword()
+	{
+		global $db;
+
+		if(!isset($_SESSION['UserID'])){
+			return 'ERR_NOSESSION';
+		}
+
+		$stmt = $db->prepare("SELECT Password FROM User WHERE UserID = ?");
+		$stmt->bindParam(1, $_SESSION['UserID'], \PDO::PARAM_STR);
+		$stmt->execute();
+
+		$currentPwd = $stmt->fetch();
+
+		$password0 = $_POST['password0'];
+		$password1 = $_POST['password1'];
+		$password2 = $_POST['password2'];
+
+		if (!password_verify($password0, $currentPwd)){
+			'ERR_WRONGPASSWORD';
+		}
+
+		if ($password1 != $password2) {
+			return 'ERR_PWDMISMATCH';
+		}
+		
 	}
 
 	/**
-	 * Disconnects the user
+	 * Disconnects the user by emptying the session array
 	 * 
 	 * @author Antoine Després
 	 */
@@ -216,8 +352,7 @@ your account and change your security password as someone may have guessed it.</
 	 * @return string error code
 	 */
 	public static function deleteAccount()
-	{	
-		\Model\File::deleteFolder(6);
+	{
 		global $db;
 
 		if (isset($_SESSION['UserID'])) {

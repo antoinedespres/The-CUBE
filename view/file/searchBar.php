@@ -1,4 +1,18 @@
-<?php 
+<?php
+
+
+$files = \Model\File::getFiles(false);
+$sharedFiles = \Model\File::getSharedFiles(false);
+
+$string = "";
+foreach ($files as $nom) {
+        $string = $string . '<option value="' . $nom['FileName'] . '">';
+}
+foreach ($sharedFiles as $nom) {
+        $string = $string . '<option value="' . $nom['FileName'] . '">';
+}
+echo '<datalist id="nameList" style="height:1.1em; overflow:hidden;">' . $string . '</datalist>';
+
 
 echo '
         <div id="searchBar">
@@ -7,14 +21,3 @@ echo '
                         <button type="submit">OK</button>
                 </form>
         </div>';
-
-if (isset($_POST['search'])){
-        $files = \Model\File::getFiles2();
-        if (isset($files)){
-                $string = "";
-                foreach ($files as $nom){
-                        $string = $string . '<option value="'. $nom['FileName'] .'">';
-                }
-                echo '<datalist id="nameList">' . $string . '</datalist>';
-        }
-}

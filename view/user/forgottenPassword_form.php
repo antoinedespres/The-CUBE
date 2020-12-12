@@ -22,3 +22,6 @@
 		<input type="submit" value="Send email">
 	</form>
 </div>
+
+<?php 
+	echo $data;

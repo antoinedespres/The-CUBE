@@ -24,12 +24,20 @@ $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 // aren't block-scoped, the $action and $matches variables are available outside
 // the loop to provide the parameters to the function afterwards.
 $matched = false;
-foreach($routes as $pattern => $action) {
-    if (preg_match("#$pattern#", $_SERVER['REQUEST_URI'], $matches) === 1) {
-        $matched = true;
-        break;
+if(isset($_SESSION['UserID']))
+    foreach($routes['loggedIn'] as $pattern => $action) {
+        if (preg_match("#$pattern#", $_SERVER['REQUEST_URI'], $matches) === 1) {
+            $matched = true;
+            break;
+        }
     }
-}
+else
+    foreach($routes['loggedOut'] as $pattern => $action) {
+        if (preg_match("#$pattern#", $_SERVER['REQUEST_URI'], $matches) === 1) {
+            $matched = true;
+            break;
+        }
+    }
 
 // If nothing matched, return a 404.
 if (!$matched) {

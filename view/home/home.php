@@ -2,7 +2,7 @@
 
 echo '
     <head>
-        <link href="style.css" rel="stylesheet" type="text/css">
+        <link href="./style.css" rel="stylesheet" type="text/css">
     </head>
     <body id="home">
         <div id="container">';
@@ -10,6 +10,7 @@ echo '
         echo '
             <h1>Welcome ' . $_SESSION['FirstName'] . "!</h1>";
         include("view/menu.php");
+        echo '</div>';
     }
     else
         echo'
