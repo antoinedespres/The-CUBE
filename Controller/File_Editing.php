@@ -28,7 +28,7 @@ class File_Editing
                     $path = "./Files/" . $fileToEdit['UserID'] . "/" . $fileToEdit['FileName'];
                 }
                 else{
-                    render('file/File_Edit/Select_File_To_Edit', \Model\File_Editing::linkToFiles());
+                    \Controller\File_Editing::showFiles();
                     return;
                 }
             }
@@ -56,7 +56,7 @@ class File_Editing
     public static function showFiles()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            render('file/File_Edit/Select_File_To_Edit', \Model\File_Editing::linkToFiles());
+            \Controller\File::getFiles();
             return;
         }
 
@@ -74,6 +74,6 @@ class File_Editing
             }
         }
         file_put_contents($path, htmlspecialchars($_POST['editedContent']), LOCK_EX);
-        render('file/File_Edit/Select_File_To_Edit', \Model\File_Editing::linkToFiles());
+        \Controller\File::getFiles();
     } 
 }

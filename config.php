@@ -8,9 +8,9 @@ return [
 		'URL' => 'thecube'
 	],
 	'mail' => [
-		'host' => '',
-		'email' => '',
-		'password' => '',
-		'port' => 0
+		'host' => 'smtp.gmail.com',
+		'email' => 'thecubeservices75@gmail.com',
+		'password' => 'AntoTotoMomoViviNiNi',
+		'port' => 587
 	]
 ];

@@ -1,7 +1,9 @@
 <?php
 if (isset($_SESSION['UserID'])) {
        echo '
+       <a href="/"> <img id="logoConnect" src="/assets/logo_large.png"></img></a>
               <nav>
+              
                      <div id="menu">
                             <ul>
                                    <li><a href="/">Home</a></li><!-- @whitespace
@@ -26,4 +28,6 @@ if (isset($_SESSION['UserID'])) {
               </nav>';
        include('file/searchBar.php');
 }
-?>
+else{
+       echo '<a href="/"> <img id="logoDisconnect" src="/assets/logo_large.png"></img></a>';
+}

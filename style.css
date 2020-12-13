@@ -1,7 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz:wght@300&display=swap');
 /* ---------
-	REGISTER
+	ALL
 ------------ */
+p{
+	color:white;
+}
+
+/* ---------
+	LOGO
+------------ */
+#logo{
+	margin:0 auto;
+	margin-left: 47%;
+	height : 120px;
+}
+
+#logoDisconnect{
+	margin-left:33%;
+	top : 50px;
+	position : absolute;
+	height : 120px;
+}
+
+#logoConnect{
+	margin-left:35px;
+	top:0px;
+	position : absolute;
+	height : 50px;
+	z-index:20;
+}
+
+/* ---------
+	BODY
+------------ */
+.styleBody{
+	background-color : #2b2142;
+	height : 100vh;
+	margin:0;
+}
+
+/* ------------------
+	REGISTER & SHARE
+--------------------- */
 #register{
 	background-color : #2b2142;
 	height : 100vh;
@@ -17,7 +57,7 @@
 	width:550px;
 	margin: 0 auto;
 	position:relative;
-	top : 250px;
+	top : 300px;
 }
 #register fieldset {
 	background-color : rgb(139, 119, 155);
@@ -53,34 +93,40 @@
  background-color: rgb(103, 89, 116);
 }
 
-/* ---------
-	LOGIN
---------- */
+/* -----------------------
+	LOGIN & DELETE 
+--------------------------- */
 
-#login legend, label {
+
+#login legend, label, #delete legend, label{
 	font-family: sans-serif;
 	font-size:13px;
 }
+#login a, #delete a{
+	color:white;
+	text-decoration: none;
+	font-size:13px;
+}
 
-#login form {
+#login form, #delete form{
 	width:450px;
 	margin: 0 auto;
 	position : relative;
-	top:250px;
+	top:300px;
 }
-#login fieldset {
+#login fieldset, #delete fieldset{
 	background-color : rgb(139, 119, 155);
 	border:1px solid white;
 	text-align:center;
 	color:white;
 }
 
-#login legend {
+#login legend, #delete legend {
 	font-weight:700;
 	text-transform:uppercase;
 }
 
-#login form input[type=submit] {
+#login form input[type=submit], #delete form input[type=submit]  {
 	margin : 10px 44%;
 	border-radius:4px;
 	padding:5px;
@@ -89,7 +135,7 @@
 	color:white;
 }
 
-#login form input[type=submit]:hover {
+#login form input[type=submit]:hover, #delete form input[type=submit]:hover  {
 	background-color:rgb(103, 89, 116);
 }
 
@@ -98,10 +144,17 @@
 ------------- */
 #searchBar form input[type=search], #searchBar form button[type=submit] {
 	padding: 6px;
-	/* border: none; */
 	margin-top: 8px;
 	font-size: 15px;
-	z-index:10;
+	background-color: thistle;
+}
+#searchBar form input[type=submit]:hover  {
+	background-color:rgb(139, 119, 155);
+}
+#searchBar {
+	position:absolute;
+	right:30px;
+	top:0;
 }
 
 /* ---------
@@ -144,14 +197,14 @@
 #home #container{
 	padding-top: 100px;
 }
-/* ---------
+/* ----------
    	 MENU
 ------------- */
 
 nav{
 	width: 100%;
-    top: 0px;
-	position: fixed;
+	top: 0px;
+	position : fixed;
 }
 
 #menu ul {
@@ -187,7 +240,7 @@ nav{
     transition: background-color 0.5s;
 }
 
-#menu li a:hover, .clique {
+#menu li a:hover, #menu li:active{
     background-color: rgb(99, 86, 110);
 }
 
@@ -198,4 +251,102 @@ nav{
 #menu ul li:hover ul li{
     display: table;
     margin: 0;
+}
+
+/* ---------
+   	 MYFILES
+------------- */
+#myFiles thead th {
+	font-family: sans-serif;
+	font-size:20px;
+	color:white;
+	text-align:left
+}
+#myFiles thead tr {
+	background-color: #8a6183;
+	font-size:13px;
+	text-transform: uppercase;
+	font-weight: bold;
+	color : white;
+}
+
+#myFiles .titleHeader {
+	background-color: transparent;
+    text-align: center;
+}
+
+#myFiles th, #myFiles td {
+    padding: 12px 15px;
+}
+
+#myFiles table {
+	border-collapse: collapse;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 80%;
+	margin:0 auto;
+	margin-top : 100px;
+}
+
+#myFiles tbody tr td {
+	color:white;
+	text-align:left;
+	background-color: #9b8698;
+}
+
+#myFiles tbody tr:hover {
+	background-color:#8a6183;
+	opacity:0.8;
+}
+
+#myFiles a {
+	font-weight:bold;
+	color:white;
+	text-decoration: none;
+}
+
+#myFiles p {
+	margin-top:150px;
+	padding-left:40px;
+}
+
+#myFiles #iconEdit{
+	height:50px;
+	text-align:center;
+}
+
+#myFiles #iconDownload{
+	height:20px;
+	text-align:center;
+}
+
+#myFiles #iconDelete{
+	height:30px;
+	text-align:center;
+}
+
+
+/* ------------
+   	EDIT FILES
+--------------- */
+#editFile h1{
+	color: white;
+	margin-top:150px;
+}
+
+#editFile {
+	margin-left:50px;
+}
+
+#editFile input[type=submit]{
+	margin : 10px;
+	border-radius:4px;
+	padding:5px;
+	background-color:rgb(139, 119, 155);
+	border:1px solid white;
+	color:white;
+}
+
+#editFile input[type=submit]:hover{
+	background-color:rgb(103, 89, 116);
 }

@@ -16,7 +16,7 @@ class File_Editing
         global $db;
 
 
-        $stmt = $db->prepare("select * from File where FileID = ?");
+        $stmt = $db->prepare("SELECT * FROM File WHERE FileID = ?");
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $stmt->bindParam(1, $_GET['file_id'], \PDO::PARAM_INT);
         }
@@ -28,38 +28,6 @@ class File_Editing
     }
 
     /**
-     * Gets a list of links to text files to edit
-     * @author Ny Andy Randrianarimanana
-     * @return string with the links in it
-     */
-    public static function linkToFiles()
-    {
-
-        global $db;
-        $files = \Model\File::getFiles(false);
-
-        $share = \Model\File::getSharedFiles(false);
-        $fileList = "";
-
-       
-
-        foreach ($files as $file) {
-            if($file['Category'] == 'Text')
-                $fileList = $fileList . '<a href="/File_Editing?file_id=' . $file['FileID'] . '">' . $file['FileName'] . '</a><br>';
-        }
-
-        if (!$share == null) {  
-            $fileList = $fileList . ' <h4> Your shared Files : </h4> <br>';
-            foreach ($share as $file) {
-                if($file['Category'] == 'Text')
-                    $fileList = $fileList . '<a href="/File_Editing?file_id=' . $file['FileID'] . '">' . $file['FileName'] . '</a><br>';
-            } 
-        }
-
-        return $fileList;
-    }
-
-    /**
      * Return True if someone has access to this file (shared)
      * @author Ny Andy Randrianarimanana
      * @param File the file we're investigating
@@ -68,7 +36,7 @@ class File_Editing
 
     public static function whoHasAccessTo($file){
         global $db;
-        $stmt = $db->prepare("Select UserID from HasAccessTo where FileID = ?");
+        $stmt = $db->prepare("SELECT UserID FROM HasAccessTo WHERE FileID = ?");
         $stmt->bindParam(1, $file['FileID'], \PDO::PARAM_INT);
         $stmt->execute();
         // if(!$stmt->execute()){

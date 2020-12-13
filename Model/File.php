@@ -87,10 +87,10 @@ class File
         $folder = './Files/' . $userID;
 
         if (!is_dir($folder))
-            return false;
+            return true;
 
         foreach (scandir($folder) as $file) {
-            if($file == '.' or $file == '..')
+            if($file != '.' and $file != '..')
                 unlink($folder . '/' . $file);
         }
 
@@ -105,7 +105,7 @@ class File
      */
     public static function share()
     {
-        $shareEmail = $_POST['email'];
+        $shareEmail = strtolower($_POST['email']);
         $fileName = $_POST['fileName'];
 
         $file = \Model\File::getFile($fileName, $_SESSION['UserID']);
@@ -227,14 +227,18 @@ class File
         $extension = explode('.', $fileName);
         if ($extension == null)
             return null;
-        if (in_array(strtolower($extension[1]), ['txt', 'php', 'js', 'java', 'py', 'c', 'css', 'cpp']))
+        if (in_array(strtolower($extension[1]), ['txt', 'php', 'js', 'java', 'py', 'c', 'css', 'csv', 'cpp', 'html', 'cs']))
             return 'Text';
-        if (in_array(strtolower($extension[1]), ['jpg', 'jpeg', 'png']))
+        if (in_array(strtolower($extension[1]), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'svg']))
             return 'Image';
         if (in_array(strtolower($extension[1]), ['mp3', 'ogg', 'm4a']))
             return 'Music';
         if (in_array(strtolower($extension[1]), ['mp4', 'avi', 'mov']))
             return 'Video';
+        if (in_array(strtolower($extension[1]), ['exe']))
+            return 'Windows executable';
+        if (in_array(strtolower($extension[1]), ['zip', '7z', 'rar']))
+            return 'Compressed folder';
         return 'Unknown';
     }
 }

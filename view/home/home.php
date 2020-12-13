@@ -14,6 +14,7 @@ echo '
     }
     else
         echo'
+            <img id="logo" src="/assets/thecube.png"></img>;
             <h1>Welcome to the CUBE!</h1>
             <div class="containerChild">
                 <span class="button"><a href="login">Sign in</a></span>
