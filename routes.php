@@ -6,7 +6,6 @@
 // handle multiple actions.
 return [
     'loggedOut' => [
-        '/users' => 'Controller\Users@list',
         '/register' => 'Controller\Users@register',
         '/login' => 'Controller\Users@login',
         '/forgottenPassword' => 'Controller\Users@forgottenPassword',
@@ -14,7 +13,6 @@ return [
         '/' => 'Controller\Home@get'
     ],
     'loggedIn' => [
-        '/users' => 'Controller\Users@list',
         '/deleteAccount' => 'Controller\Users@deleteAccount',
         '/changePassword' => 'Controller\Users@changePassword',
         '/disconnect' => 'Controller\Users@disconnect',
@@ -23,8 +21,8 @@ return [
         '/shareFile' => 'Controller\File@Share',
         '/yourFiles' => 'Controller\File@getFiles',
         '/search' => 'Controller\File@searchFiles',
-        '/createDir' => 'Controller\File@createDirectory',
         '/edit' => 'Controller\File_Editing@showFiles',
+        '/createDir' => 'Controller\File@createDirectory',
         '/File_Editing' => 'Controller\File_Editing@fileContent',
         '/' => 'Controller\Home@get'
     ]

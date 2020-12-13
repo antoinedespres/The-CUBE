@@ -9,18 +9,6 @@ require 'lib/vendor/autoload.php';
 
 class Users
 {
-	public static function list()
-	{
-		global $db;
-
-		$stmt = $db->prepare("SELECT * FROM User;");
-		if ($stmt->execute() === false) {
-			echo $stmt->errorCode();
-			return;
-		}
-		return $stmt->fetchAll();
-	}
-
 	public static function register()
 	{
 		global $db;
@@ -79,6 +67,7 @@ class Users
 
 	/**
 	 * Gets the UserID of the correponding e-mail from the database
+	 * 
 	 * @author Viviane Qian
 	 * @return int the UserID if it exists, null if not
 	 */
@@ -301,11 +290,13 @@ is needed, your password will not be reset.</p>';
 			
 			$password1 = password_hash($password1, PASSWORD_BCRYPT, ['cost' => 12]);;
 
+			// Password change in DB
 			$stmt = $db->prepare("UPDATE User SET Password = ? WHERE Email = ?;");
 			$stmt->bindParam(1, $password1, \PDO::PARAM_STR);
 			$stmt->bindParam(2, $email, \PDO::PARAM_STR);
 			$stmt->execute();
 
+			// Delete record in the temporary table
 			$stmt = $db->prepare("DELETE FROM PasswordResetTemp Where Email = ?;");
 			$stmt->bindParam(1, $email, \PDO::PARAM_STR);
 			$stmt->execute();
@@ -313,13 +304,18 @@ is needed, your password will not be reset.</p>';
 		}
 	}
 
+	/**
+	 * Change password function
+	 * 
+	 * @author Antoine Després
+	 * @return string error code
+	 */
 	public static function changePassword()
 	{
 		global $db;
 
-		if (!isset($_SESSION['UserID'])) {
+		if (!isset($_SESSION['UserID']))
 			return 'ERR_NOSESSION';
-		}
 
 		$stmt = $db->prepare("SELECT * FROM User WHERE UserID = ?");
 		$stmt->bindParam(1, $_SESSION['UserID'], \PDO::PARAM_STR);

@@ -51,7 +51,7 @@ class File
      */
     public static function delete()
     {
-        $fileName = $_POST['fileName'];
+        $fileName = $_GET['fileName'];
         $id = $_SESSION['UserID'];
 
         $file = \Model\File::getFile($fileName, $id);
@@ -231,14 +231,24 @@ class File
             return 'Text';
         if (in_array(strtolower($extension[1]), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'svg']))
             return 'Image';
-        if (in_array(strtolower($extension[1]), ['mp3', 'ogg', 'm4a']))
+        if (in_array(strtolower($extension[1]), ['mp3', 'ogg', 'm4a', 'wav', 'wma']))
             return 'Music';
-        if (in_array(strtolower($extension[1]), ['mp4', 'avi', 'mov']))
+        if (in_array(strtolower($extension[1]), ['mp4', 'avi', 'mov', 'wmv']))
             return 'Video';
         if (in_array(strtolower($extension[1]), ['exe']))
             return 'Windows executable';
         if (in_array(strtolower($extension[1]), ['zip', '7z', 'rar']))
             return 'Compressed folder';
+        if (in_array(strtolower($extension[1]), ['pdf']))
+            return 'Document';
+        if (in_array(strtolower($extension[1]), ['doc', 'docx', 'docm']))
+            return 'Word Document';
+        if (in_array(strtolower($extension[1]), ['xlsx', 'xls', 'xlsm']))
+            return 'Excel Document';
+        if (in_array(strtolower($extension[1]), ['ppt', 'pptx', 'pptm','pot']))
+            return 'Powerpoint Document';
+        if (in_array(strtolower($extension[1]), ['eml']))
+            return 'Outlook mail';
         return 'Unknown';
     }
 }

@@ -53,8 +53,6 @@ class Users
 			return;
 		}
 
-		// redirige vers la page d'accueil pour le moment si l'inscription est réussie
-		// faudra probablement changer ça
 		$response = \Model\Users::register();
 		if ($response == 'OK_REGISTERED') {
 			render('home/home');
@@ -72,12 +70,6 @@ class Users
 
 		$response = \Model\Users::login();
 		render('user/login_form', Users::USERS_ERRORS['login'][$response]);
-	}
-
-	public function list()
-	{
-		$users = \Model\Users::list();
-		render('user/list', $users);
 	}
 
 	public function forgottenPassword()
@@ -128,6 +120,7 @@ class Users
 		$response = \Model\Users::changePassword();
 		$data[0] = 'change';
 		$data[1] = Users::USERS_ERRORS['changePassword'][$response];
+		
 		if($response == 'OK_PWDCHANGED')
 		render('home/home', '');
 		else

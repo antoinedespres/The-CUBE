@@ -1,12 +1,6 @@
 <?php
 
 
-// $stmt = $db->prepare('SELECT * FROM File as f, User as u WHERE FileID=' . $files['FileID'] . ' AND f.UserID = u.UserID' . ' AND f.Catgeory = "Text" ;');
-// $searchValue = '%' . $_POST["search"] . '%';
-// $stmt->bindValue(':searchValue', $searchValue, \PDO::PARAM_STR);
-// if ($stmt->execute() === false) {
-// return 'Error: ' . $stmt->errorCode();
-
 namespace Controller;
 
 class File_Editing

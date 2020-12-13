@@ -37,13 +37,14 @@ class File
 
     public static function delete()
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            render('file/delete', []);
-            return;
-        }
+        // if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+        //     render('file/delete', []);
+        //     return;
+        // }
 
         $response = \Model\File::delete();
-        render('file/delete', File::FILE_ERRORS['delete'][$response]);
+        //render('file/delete', File::FILE_ERRORS['delete'][$response]);
+        \Controller\File::getFiles();
     }
 
     public static function share()
@@ -64,8 +65,6 @@ class File
         render('file/myFiles', array($ownFiles, $sharedFiles));
     }
 
-    //---------------------------------------------------------
-    // FONCTIONS POUR SEARCH BAR
     public static function searchFiles()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {

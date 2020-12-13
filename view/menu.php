@@ -13,7 +13,6 @@ if (isset($_SESSION['UserID'])) {
                                                  <li><a href="deleteFile">Delete</a></li>
                                                  <li><a href="shareFile">Share</a></li>
                                                  <li><a href="yourFiles">Show my files</a></li>
-                                                 <li><a href="edit">Edit</a></li>
                                           </ul>
                                    </li><!-- @whitespace
                                    --><li><a>Account</a>

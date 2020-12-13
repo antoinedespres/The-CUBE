@@ -34,5 +34,3 @@ echo '
     </div>
 </body>';
 ?>
-
-<script src="script/chat.js.php?FirstName=<?= $_SESSION['FirstName'];?>"></script>
