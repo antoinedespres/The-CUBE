@@ -9,10 +9,9 @@ if (isset($_SESSION['UserID'])) {
                                    <li><a href="/">Home</a></li><!-- @whitespace
                                    --><li><a>File</a>
                                           <ul>
-                                                 <li><a href="uploadFile">Upload</a></li>
-                                                 <li><a href="deleteFile">Delete</a></li>
-                                                 <li><a href="shareFile">Share</a></li>
                                                  <li><a href="yourFiles">Show my files</a></li>
+                                                 <li><a href="uploadFile">Upload</a></li>
+                                                 <li><a href="shareFile">Share</a></li>
                                           </ul>
                                    </li><!-- @whitespace
                                    --><li><a>Account</a>
