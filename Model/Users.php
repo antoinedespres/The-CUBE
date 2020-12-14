@@ -9,6 +9,12 @@ require 'lib/vendor/autoload.php';
 
 class Users
 {
+	/**
+	 * Account creation function
+	 * 
+	 * @author Antoine Després
+	 * @return string error code
+	 */
 	public static function register()
 	{
 		global $db;
@@ -26,6 +32,7 @@ class Users
 			return 'ERR_INVALIDEMAIL';
 		}
 
+		// Checks form's content before registration
 		if (strlen($_POST['firstName']) == 0 || strlen($_POST['lastName']) == 0) 
 			return "ERR_EMPTYFIELD";
 		
@@ -49,16 +56,13 @@ class Users
 			return 'ERR_EXISTINGACC';
 		}
 
-		// Connect the new user
-
-		$stmt = $db->prepare("SELECT UserID, FirstName FROM User WHERE Email = ?;");
-		$stmt->bindParam(1, $email, \PDO::PARAM_STR);
-		$stmt->execute();
-
-		$user = $stmt->fetch();
+		$user = Users::getUser($email);
+		$_SESSION = array();
 		$_SESSION['UserID'] = $user['UserID'];
 		$_SESSION['FirstName'] = $user['FirstName'];
+		$_SESSION['Email'] = $user['Email'];
 
+		// Update LastLoginTime in DB
 		if (!Users::updateTimestamp($_SESSION['UserID']))
 			return 'ERR_TIMESTAMPFAIL';
 
@@ -66,16 +70,16 @@ class Users
 	}
 
 	/**
-	 * Gets the UserID of the correponding e-mail from the database
+	 * Gets the User infos of the correponding e-mail from the database
 	 * 
 	 * @author Viviane Qian
-	 * @return int the UserID if it exists, null if not
+	 * @return array the result of the query
 	 */
 	public static function getUser($email)
 	{
 		global $db;
 
-		$stmt = $db->prepare("SELECT UserID FROM User where Email = ?;");
+		$stmt = $db->prepare("SELECT * FROM User where Email = ?;");
 		$stmt->bindParam(1, $email, \PDO::PARAM_STR);
 		$stmt->execute();
 
@@ -106,17 +110,16 @@ class Users
 			return 'ERR_INVALIDEMAIL';
 		}
 
-		$stmt = $db->prepare("SELECT * FROM User where Email = ?;");
-		$stmt->bindParam(1, $email, \PDO::PARAM_STR);
-		$stmt->execute();
-		$user = $stmt->fetch();
+		$user = Users::getUser($email);
 
 		if ($user == null)
 			return 'ERR_NOACCOUNT';
 
 		if (password_verify($_POST['password'], $user['Password'])) {
+			$_SESSION = array();
 			$_SESSION['UserID'] = $user['UserID'];
 			$_SESSION['FirstName'] = $user['FirstName'];
+			$_SESSION['Email'] = $user['Email'];
 
 			if (!Users::updateTimestamp($_SESSION['UserID']))
 				return 'ERR_TIMESTAMPFAIL';
@@ -170,10 +173,7 @@ class Users
 			if (!$email) {
 				return "ERR_INVALIDEMAIL";
 			} else {
-				$stmt = $db->prepare("SELECT * FROM User WHERE Email = ?");
-				$stmt->bindParam(1, $email, \PDO::PARAM_STR);
-				$stmt->execute();
-				$user = $stmt->fetch();
+				$user = Users::getUser($email);
 			}
 
 			if ($user == null) {
@@ -258,8 +258,7 @@ is needed, your password will not be reset.</p>';
 
 		$email = $_SESSION['email'];
 		$key = $_SESSION['key'];
-		$_SESSION = array();
-
+		
 		$currentDate = date("Y-m-d H:i:s");
 
 		if (isset($key) && isset($email)) {
@@ -272,13 +271,11 @@ is needed, your password will not be reset.</p>';
 			if ($record == null)
 				return 'ERR_NORESETQUERY';
 			
-
 			$expiryDate = $record['ExpiryDate'];
 
 			if ($expiryDate < $currentDate)
 				return 'ERR_EXPIREDLINK';
 			
-
 			$password1 = $_POST['password1'];
 			$password2 = $_POST['password2'];
 
@@ -300,6 +297,7 @@ is needed, your password will not be reset.</p>';
 			$stmt = $db->prepare("DELETE FROM PasswordResetTemp Where Email = ?;");
 			$stmt->bindParam(1, $email, \PDO::PARAM_STR);
 			$stmt->execute();
+			$_SESSION = array();
 			return 'OK_PWDCHANGED';
 		}
 	}
@@ -317,11 +315,7 @@ is needed, your password will not be reset.</p>';
 		if (!isset($_SESSION['UserID']))
 			return 'ERR_NOSESSION';
 
-		$stmt = $db->prepare("SELECT * FROM User WHERE UserID = ?");
-		$stmt->bindParam(1, $_SESSION['UserID'], \PDO::PARAM_STR);
-		$stmt->execute();
-
-		$user = $stmt->fetch();
+		$user = Users::getUser($_SESSION['Email']);
 
 		$password0 = $_POST['password0'];
 		$password1 = $_POST['password1'];
@@ -336,6 +330,7 @@ is needed, your password will not be reset.</p>';
 		if (strlen($password1) < 8)
 			return 'ERR_PWDTOOSHORT';
 
+		// Password update
 		$password1 = password_hash($password1, PASSWORD_BCRYPT, ['cost' => 12]);
 
 		$stmt = $db->prepare("UPDATE User SET Password = ? WHERE UserID = ?;");
@@ -366,18 +361,20 @@ is needed, your password will not be reset.</p>';
 	{
 		global $db;
 
-		if (isset($_SESSION['UserID'])) {
-			$stmt = $db->prepare("SELECT * FROM User WHERE UserID = ?;");
-			$stmt->bindParam(1, $_SESSION['UserID'], \PDO::PARAM_STR);
-			$stmt->execute();
-			$user = $stmt->fetch();
+		// If connected
+		if (isset($_SESSION['Email'])) {
+			$user = Users::getUser($_SESSION['Email']);
 
+			// If the password is correct
 			if (password_verify($_POST['password'], $user['Password'])) {
 				$db->exec('PRAGMA foreign_keys = ON;');
 				$stmt = $db->prepare("DELETE FROM User WHERE UserID = ?;");
 				$stmt->bindParam(1, $_SESSION['UserID'], \PDO::PARAM_STR);
 				$stmt->execute();
+
 				\Model\File::deleteFolder($_SESSION['UserID']);
+
+				// Remove user's info from the session
 				$_SESSION = array();
 				return 'OK_ACCOUNTDELETED';
 			}

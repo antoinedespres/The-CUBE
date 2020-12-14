@@ -2,6 +2,10 @@
 
 namespace Controller;
 
+/**
+ * Controller that interacts between the model managing the files and its views
+ * @author Viviane Qian, Monica Huynh
+ */
 class File
 {
     const FILE_ERRORS = [
@@ -59,11 +63,11 @@ class File
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             render('file/searchBar', []);
             return;
-        } else {
-            $ownFiles = \Model\File::getFiles(true);
-            $sharedFiles = \Model\File::getSharedFiles(true);
-            render('file/myFiles', array($ownFiles, $sharedFiles));
-        }   
+        }
+
+        $ownFiles = \Model\File::getFiles(true);
+        $sharedFiles = \Model\File::getSharedFiles(true);
+        render('file/myFiles', array($ownFiles, $sharedFiles));
     }
 
 }

@@ -1,17 +1,17 @@
 <?php
-
-
-$files = \Model\File::getFiles(false);
+$ownFiles = \Model\File::getFiles(false);
 $sharedFiles = \Model\File::getSharedFiles(false);
-
 $string = "";
-foreach ($files as $nom) {
-        $string = $string . '<option value="' . $nom['FileName'] . '">';
+
+foreach ($ownFiles as $file) {
+        $string = $string . '<option value="' . $file['FileName'] . '">';
 }
-foreach ($sharedFiles as $nom) {
-        $string = $string . '<option value="' . $nom['FileName'] . '">';
+
+foreach ($sharedFiles as $file) {
+        $string = $string . '<option value="' . $file['FileName'] . '">';
 }
-echo '<datalist id="nameList" style="height:1.1em; overflow:hidden;">' . $string . '</datalist>';
+
+echo '<datalist id="nameList">' . $string . '</datalist>';
 
 
 echo '

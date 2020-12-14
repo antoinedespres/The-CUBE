@@ -10,4 +10,4 @@ RewriteRule ^ index.php [L]
 RewriteCond %{HTTP_HOST}@@%{HTTP_REFERER} !^([^@]*)@@https?://\1/.*
 
 # Deny access to these types
-RewriteRule \.(gif|txt|js|java|py|c|jpg|jpeg|png|pdf|wav|wmv|wma|avi|mov|mp4|mp3|zip|rar|7z?)$ - [F]
+RewriteRule \.(gif|txt|js|java|py|c|jpg|jpeg|png|pdf|wav|wmv|wma|avi|mov|mp4|mp3|zip|rar|7z|doc|docx|docm|xls|xlsx|xlsm|ppt|pptx|pptm?)$ - [F]

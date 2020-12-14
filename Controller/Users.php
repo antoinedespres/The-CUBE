@@ -2,6 +2,10 @@
 
 namespace Controller;
 
+/**
+ * Controller that manages user accounts
+ * @author Antoine Després
+ */
 class Users
 {
 	const USERS_ERRORS = [
@@ -24,7 +28,7 @@ class Users
 			'ERR_INVALIDEMAIL' => 'Invalid email format.',
 			'ERR_MAILER' => 'Something wrong happend with our mailer service. Sorry for the inconvenience.',
 			'ERR_NOACCOUNT' => 'There is no account associated with this email address.',
-			'OK_SENT' => 'An email have been sent with instructions to reset your password.'
+			'OK_MAILSENT' => 'An email have been sent with instructions to reset your password.'
 		],
 		'resetPassword' => [
 			'ERR_NORESETQUERY' => 'There is no password reset request for this account, or this account does not exist.',
@@ -69,7 +73,11 @@ class Users
 		}
 
 		$response = \Model\Users::login();
-		render('user/login_form', Users::USERS_ERRORS['login'][$response]);
+		if ($response == 'OK_CONNECTED') {
+			render('home/home');
+		} else {
+			render('user/login_form', Users::USERS_ERRORS['login'][$response]);
+		}
 	}
 
 	public function forgottenPassword()
@@ -87,12 +95,18 @@ class Users
 		if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 			$_SESSION['key'] = $_GET['key'];
 			$_SESSION['email'] = $_GET['email'];
-			render('user/modifyPassword_form', 'reset');
+			render('user/modifyPassword_form', ['reset']);
 			return;
 		}
 		$data[0] = 'reset';
-		$data[1] = Users::USERS_ERRORS['resetPassword'][\Model\Users::resetPassword($_POST)];
-		render('user/modifyPassword_form', $data);
+
+		if (isset($data[1])) {
+			if ($data[1] == 'OK_PWDCHANGED')
+				render('home/home');
+		} else {
+			$data[1] = Users::USERS_ERRORS['resetPassword'][\Model\Users::resetPassword($_POST)];
+			render('user/modifyPassword_form', $data);
+		}
 	}
 
 	public function disconnect()
@@ -108,6 +122,10 @@ class Users
 			return;
 		}
 		$response = \Model\Users::deleteAccount();
+		if ($response == 'OK_ACCOUNTDELETED') {
+			render('home/home');
+			return;
+		}
 		render('user/deleteAccount_form', Users::USERS_ERRORS['deleteAccount'][$response]);
 	}
 
@@ -120,9 +138,9 @@ class Users
 		$response = \Model\Users::changePassword();
 		$data[0] = 'change';
 		$data[1] = Users::USERS_ERRORS['changePassword'][$response];
-		
-		if($response == 'OK_PWDCHANGED')
-		render('home/home', '');
+
+		if ($response == 'OK_PWDCHANGED')
+			render('home/home', '');
 		else
 			render('user/modifyPassword_form', $data);
 	}

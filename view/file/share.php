@@ -1,8 +1,8 @@
 <head>
 	<link href="/style.css" rel="stylesheet" type="text/css">
 </head>
-<?php 
 
+<?php 
 include("view/menu.php"); 
 
 echo '
@@ -28,6 +28,8 @@ echo '
             </fieldset>
             <span>* required field</span>
             <input type="submit" value="Share">';
+
+            // $data contains a string describing the state of the sharing
             if ($data != null)
                 echo '<p>' . $data . '</p>
         </form>

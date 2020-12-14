@@ -4,7 +4,7 @@
 </head>
 
 <body class="styleBody">
-	<?php include("view/menu.php");
+<?php include("view/menu.php");
 echo '
 	<div id="register">
 		<form method="POST">

@@ -5,12 +5,12 @@ return [
 		'path' => 'database.sqlite'
 	],
 	'server' => [
-		'URL' => 'thecube'
+		'URL' => 'thecube' // The name of your virtualhost
 	],
 	'mail' => [
-		'host' => '',
+		'host' => '', // smtp...
 		'email' => '',
 		'password' => '',
-		'port' => 587
+		'port' => 0 // port number
 	]
 ];

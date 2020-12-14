@@ -14,30 +14,30 @@ class File_Editing
     {
         /*$_GET[file_id]*/
         $fileToEdit = \Model\File_Editing::findFile();
-            if($_SESSION['UserID'] == $fileToEdit['UserID']){
-                $path = "./Files/" . $_SESSION['UserID'] . "/" . $fileToEdit['FileName'];
-            }
-            else{
-                if(\Model\File_Editing::whoHasAccessTo($fileToEdit)){
-                    $path = "./Files/" . $fileToEdit['UserID'] . "/" . $fileToEdit['FileName'];
-                }
-                else{
-                    \Controller\File_Editing::showFiles();
-                    return;
-                }
-            }
-
-            $content['ID'] = $fileToEdit['FileID'];
-            $content['name'] = $fileToEdit['FileName'];
-            if(filesize($path) == 0) {
-                $content['content'] = "";
-                render('file/File_Edit/File_Editing',  $content);
+        if ($fileToEdit == null)
+            render('home/home');
+        if ($_SESSION['UserID'] == $fileToEdit['UserID']) {
+            $path = "./Files/" . $_SESSION['UserID'] . "/" . $fileToEdit['FileName'];
+        } else {
+            if (\Model\File_Editing::whoHasAccessTo($fileToEdit)) {
+                $path = "./Files/" . $fileToEdit['UserID'] . "/" . $fileToEdit['FileName'];
+            } else {
+                \Controller\File_Editing::showFiles();
                 return;
             }
-            $myfile = fopen($path, "a+") or die("This file doesn't exist");
-            $content['content'] = fread($myfile, filesize($path));
-            fclose($myfile);
+        }
+
+        $content['ID'] = $fileToEdit['FileID'];
+        $content['name'] = $fileToEdit['FileName'];
+        if (filesize($path) == 0) {
+            $content['content'] = "";
             render('file/File_Edit/File_Editing',  $content);
+            return;
+        }
+        $myfile = fopen($path, "a+") or die("This file doesn't exist");
+        $content['content'] = fread($myfile, filesize($path));
+        fclose($myfile);
+        render('file/File_Edit/File_Editing',  $content);
     }
 
 
@@ -56,18 +56,16 @@ class File_Editing
 
         $fileToEdit = \Model\File_Editing::findFile();
 
-        if($_SESSION['UserID'] == $fileToEdit['UserID']){
+        if ($_SESSION['UserID'] == $fileToEdit['UserID']) {
             $path = "./Files/" . $_SESSION['UserID'] . "/" . $fileToEdit['FileName'];
-        }
-        else{
-            if(\Model\File_Editing::whoHasAccessTo($fileToEdit)){
+        } else {
+            if (\Model\File_Editing::whoHasAccessTo($fileToEdit)) {
                 $path = "./Files/" . $fileToEdit['UserID'] . "/" . $fileToEdit['FileName'];
-            }
-            else{
+            } else {
                 return 'You are not allowed to open this file !';
             }
         }
         file_put_contents($path, htmlspecialchars($_POST['editedContent']), LOCK_EX);
         \Controller\File::getFiles();
-    } 
+    }
 }

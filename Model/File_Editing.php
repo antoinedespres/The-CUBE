@@ -20,8 +20,11 @@ class File_Editing
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $stmt->bindParam(1, $_GET['file_id'], \PDO::PARAM_INT);
         }
-        else
+        else{
+            if(!isset($_POST['file_id']))
+                return null;
             $stmt->bindParam(1, $_POST['file_id'], \PDO::PARAM_INT);
+        }
         $stmt->execute();
 
         return $stmt->fetch();

@@ -18,7 +18,7 @@
 			<a href="forgottenPassword">I forgot my password</a>
 			<input type="submit" value="Sign In">'; 
 		if(isset($data))
-		echo '<p>' . $data . '</p>
+			echo '<p>' . $data . '</p>
 		</form>
 	</div>
 </body>';

@@ -2,6 +2,10 @@
 
 namespace Model;
 
+/**
+ * Model that manages the application's files: access, addition, deletion and sharing
+ * @author Viviane Qian, Monica Huynh
+ */
 class File
 {
     /**
@@ -20,7 +24,7 @@ class File
             mkdir($userDir);
         }
 
-        if ($_FILES['file']['error'] > 0)
+        if (!isset($_FILES['file']) || $_FILES['file']['error'] > 0)
             return 1;
 
         if (file_exists($userDir . '/' . $_FILES['file']['name']))
@@ -107,6 +111,9 @@ class File
      */
     public static function share()
     {
+        if(!isset($_POST['email']) || !isset($_POST['fileName']))
+            return 1;
+
         $shareEmail = strtolower($_POST['email']);
         $fileName = $_POST['fileName'];
 
@@ -116,7 +123,7 @@ class File
         if ($file == null)
             return 2;
 
-        if ($shareUserId == null or $shareUserId == $_SESSION['UserID'])
+        if ($shareUserId['UserID'] == null or $shareUserId['UserID'] == $_SESSION['UserID'])
             return 3;
 
         global $db;
@@ -174,6 +181,7 @@ class File
             $searchValue = '%' . $_POST["search"] . '%';
             $stmt->bindValue(':searchValue', $searchValue, \PDO::PARAM_STR);
         }
+
         if ($stmt->execute() === false) {
             return 'Error: ' . $stmt->errorCode();
         }
@@ -208,9 +216,11 @@ class File
                 $searchValue = '%' . $_POST["search"] . '%';
                 $stmt->bindValue(':searchValue', $searchValue, \PDO::PARAM_STR);
             }
+
             if ($stmt->execute() === false) {
                 return 'Error: ' . $stmt->errorCode();
             }
+            
             $fileQuery = $stmt->fetch();
             if($fileQuery != null)
                 array_push($queryResult, $fileQuery);

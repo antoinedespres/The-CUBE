@@ -57,4 +57,4 @@ function render($view, $data = []) {
 list($class, $method) = explode('@', $action);
 $controller = new $class();
 call_user_func_array([$controller, $method], []);
-//call_user_func_array([$controller, $method], array_slice($matches, 1));
+
