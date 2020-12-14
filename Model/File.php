@@ -46,18 +46,20 @@ class File
     /**
      * Deletes permanently a file of the currently logged in user from the server and the database
      * @author Viviane Qian
-     * @see /Model/Controller::FILE_ERRORS
-     * @return int containing a response code
+     * @return bool true if it went well, false if not
      */
     public static function delete()
     {
+        if(!isset($_GET['fileName']))
+            return false;
+
         $fileName = $_GET['fileName'];
         $id = $_SESSION['UserID'];
 
         $file = \Model\File::getFile($fileName, $id);
 
         if ($file == null)
-            return 2;
+            return false;
 
         $userDir = './Files/' . $id;
 
@@ -70,10 +72,10 @@ class File
         $stmt->bindParam(1, $id, \PDO::PARAM_STR);
         $stmt->bindParam(2, $fileName, \PDO::PARAM_STR);
         if ($stmt->execute() === false) {
-            return 1;
+            return false;
         }
 
-        return 0;
+        return true;
     }
 
     /**
