@@ -10,7 +10,7 @@ See config.php
 Please set the server URL variable with the name of your virtualhost.
 For example: "thecube"
 For the forgotten password feature, you will also have to configure the credentials for an email account.
-WARNING: when using a Google account, you have to allow access to less secured applications by clicking [here](https://myaccount.google.com/security)
+WARNING: when using a Google account, you have to allow access to less secured applications by clicking [here](https://myaccount.google.com/lesssecureapps)
 
 ## Users
 
