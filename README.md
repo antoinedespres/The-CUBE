@@ -7,9 +7,9 @@ Welcome! The CUBE is a new cloud service to store your files quickly and safely.
 
 See config.php
 
-Please set the server URL variable with the position of the website on your computer.
-For example: "localhost/thecube"
-For the forgotten password feature, you have to configure the credentials for an email account.
+Please set the server URL variable with the name of your virtualhost.
+For example: "thecube"
+For the forgotten password feature, you will also have to configure the credentials for an email account.
 WARNING: when using a Google account, you have to allow access to less secured applications by clicking [here](https://myaccount.google.com/security)
 
 ## Users
@@ -65,9 +65,5 @@ Don't want your files on our website anymore? Go to the page named "Show my file
 ### Edit
 
 You do not want to open the notepad? Why not open The CUBE who can edit a text file (and only a text file) so you can access your files and edit them! 
-Just press the pencil button (it should work if not go ask Antoine).
+Just press the pencil button.
 You can also edit files shared with you. It's kinda like a collaborative edit =) but not in real time =(.
-
-### Contact
-
-If you'd like to complain please send an email to antoine.despres@etu.u-paris.fr
