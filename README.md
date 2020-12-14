@@ -2,13 +2,14 @@
 # The CUBE
 
 Welcome! The CUBE is a new cloud service to store your files quickly and safely. No useless features, The CUBE is fast and easy to use.
+![image](https://user-images.githubusercontent.com/58844676/102138698-0adbf500-3e5d-11eb-9214-293b68f7859d.png)
 
 ### Configuration
 
 See config.php
 
 Please set the server URL variable with the name of your virtualhost.
-For example: "thecube"
+For example: "thecube".
 For the forgotten password feature, you will also have to configure the credentials for an email account.
 WARNING: when using a Google account, you have to allow access to less secured applications by clicking [here](https://myaccount.google.com/lesssecureapps)
 
