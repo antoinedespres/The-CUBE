@@ -10,11 +10,6 @@ class File
             '1' => 'File upload failed.',
             '2' => 'Your file has already been uploaded.'
         ],
-        'delete' => [
-            '0' => 'Your file has been successfully deleted.',
-            '1' => 'File deletion failed.',
-            '2' => 'The file does not exists in "Your files".'
-        ],
         'share' => [
             '0' => 'Your file has been successfully shared.',
             '1' => 'File sharing failed.',
@@ -37,13 +32,7 @@ class File
 
     public static function delete()
     {
-        // if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-        //     render('file/delete', []);
-        //     return;
-        // }
-
-        $response = \Model\File::delete();
-        //render('file/delete', File::FILE_ERRORS['delete'][$response]);
+        \Model\File::delete();
         \Controller\File::getFiles();
     }
 
