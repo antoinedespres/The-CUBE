@@ -6,7 +6,7 @@ session_start();
 // while not existing, just before throwing an error.
 spl_autoload_register(function ($class_name) {
     $class_name = str_replace('\\', '/', $class_name);
-    require($class_name.'.php');
+    require($class_name . '.php');
 });
 
 // Include the routes file.
@@ -24,15 +24,15 @@ $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 // aren't block-scoped, the $action and $matches variables are available outside
 // the loop to provide the parameters to the function afterwards.
 $matched = false;
-if(isset($_SESSION['UserID']))
-    foreach($routes['loggedIn'] as $pattern => $action) {
+if (isset($_SESSION['UserID']))
+    foreach ($routes['loggedIn'] as $pattern => $action) {
         if (preg_match("#$pattern#", $_SERVER['REQUEST_URI'], $matches) === 1) {
             $matched = true;
             break;
         }
     }
 else
-    foreach($routes['loggedOut'] as $pattern => $action) {
+    foreach ($routes['loggedOut'] as $pattern => $action) {
         if (preg_match("#$pattern#", $_SERVER['REQUEST_URI'], $matches) === 1) {
             $matched = true;
             break;
@@ -48,7 +48,8 @@ if (!$matched) {
 
 // Define the render function used by the controller to define the view to
 // display.
-function render($view, $data = []) {
+function render($view, $data = [])
+{
     require("view/$view.php");
 }
 
@@ -57,4 +58,3 @@ function render($view, $data = []) {
 list($class, $method) = explode('@', $action);
 $controller = new $class();
 call_user_func_array([$controller, $method], []);
-

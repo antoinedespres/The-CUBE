@@ -26,7 +26,6 @@ if (isset($_SESSION['UserID'])) {
               </nav>';
        include('file/searchBar.php');
        include('chat.php');
-}
-else{
+} else {
        echo '<a href="/"> <img id="logoDisconnect" src="/assets/logo_large.png"></img></a>';
 }

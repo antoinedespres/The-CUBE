@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 echo '
     <head>
@@ -6,15 +6,14 @@ echo '
     </head>
     <body id="home">
         <div id="container">';
-    if(isset($_SESSION['UserID'])){
-        echo '
+if (isset($_SESSION['UserID'])) {
+    echo '
             <h1>Welcome ' . $_SESSION['FirstName'] . "!</h1>";
-        include("view/menu.php");
-        echo '</div>';
-    }
-    else
-        echo'
-            <img id="logo" src="/assets/thecube.png"></img>;
+    include("view/menu.php");
+    echo '</div>';
+} else
+    echo '
+            <img id="logo" src="/assets/thecube.png"></img>
             <h1>Welcome to the CUBE!</h1>
             <div class="containerChild">
                 <span class="button"><a href="login">Sign in</a></span>
